@@ -51,7 +51,9 @@ node lib/pose/cli.js render resource/pose --png     # render every reference sce
 node lib/pose/cli.js render <scene.json> --construction
 node lib/pose/cli.js sheet resource/pose index.svg
 node lib/pose/cli.js lineup profiles.svg
-node --test                                         # once tests exist
+node --test                                         # all tests (golden renders included)
+node test/golden-review.js                          # side-by-side review of changed drawings
+UPDATE_GOLDEN=1 node --test                         # accept reviewed drawing changes
 ```
 
 ## Storyboard conventions (decided with the human)

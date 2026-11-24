@@ -1,0 +1,22 @@
+{
+  "seed": 11,
+  "frames": {
+    "folder": "resource/pose",
+    "scenes": [
+      "backflip", "balcony-lean", "carrying-box", "child-peek", "dash", "dive-reach",
+      "flying-kick", "ladder-climb", "ladder-from-below", "lifting-box", "peace-sign", "pointing",
+      "rising-uppercut", "running-airborne", "sitting", "standing", "three-point-landing", "walking"
+    ],
+    "construction": [false, true],
+    "expectedWarnings": {
+      "three-point-landing": ["gaze short of target by 7 deg"]
+    }
+  },
+  "sheets": [
+    { "name": "sheet", "folder": "resource/pose", "construction": false }
+  ],
+  "lineups": [
+    { "name": "lineup-yaw35", "yaw": 35 },
+    { "name": "lineup-yaw90", "yaw": 90 }
+  ]
+}
