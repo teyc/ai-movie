@@ -151,7 +151,8 @@
         "anchor": {
           "kind": "picture",
           "beat": "headlights turn the corner",
-          "frame": null
+          "frame": 312,
+          "note": "Set from the voice-first layout on 2026-11-24 (cut at frame 312, 10.4 s): the light rounds the corner on the cut, with the engine heard about 0.5 s before it. Adjust in the edit if needed."
         },
         "seconds": 2,
         "size": "wide",
