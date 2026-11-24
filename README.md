@@ -47,6 +47,9 @@ written by hand rather than produced from a shot description.
 
 | Path | What it holds |
 |---|---|
+| [`AGENTS.md`](AGENTS.md) | Rules and context for coding agents working in this repo |
+| [`docs/planning`](docs/planning) | The project plan, the source of truth for intent |
+| [`.beads`](.beads) | Work items (beads), managed with `br`; `issues.jsonl` is the committed record |
 | [`lib/pose`](lib/pose) | The storyboard mannequin: renderer, body profiles, command line, and the scene-record format |
 | [`resource/pose`](resource/pose) | Reference poses and shots, each as a scene record (`.json`) with its render (`.png`) |
 
@@ -60,7 +63,7 @@ node lib/pose/cli.js render resource/pose/dash.json
 
 ## Status
 
-Early. Only the storyboard step exists, as a prototype.
+Early. Only the storyboard step exists, as a prototype. The plan is at draft 1, and work is tracked as beads: run `br ready` to see what can be picked up now.
 
 ## Acknowledgements
 
