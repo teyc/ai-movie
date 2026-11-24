@@ -85,6 +85,10 @@ style profile and the tone in the story record.
 - `marked`: the line with `(breath)` and `|` (a pause without a breath)
   written in, so it can be read at a glance.
 
+A line that carries the turn must be intelligible first: on a phone
+speaker, a clipped deadpan read can lose its consonants. Direct it flat but
+unhurried, with each word distinct, and check the transcript of every take.
+
 Comedy and turns depend on timing: say where a line sits relative to the
 sound or picture event it follows ("after the brake squeak, not on the
 cut"). In the Fountain file, put the delivery in a parenthetical and the

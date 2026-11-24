@@ -3,7 +3,7 @@
 // Narration for a storyboard film: Gemini TTS per spoken line, Gemini transcription for
 // word timings, then offline assembly of the chosen takes into a timed voice track.
 //
-//   node scripts/narrate.js generate <project-dir> [--takes 2] [--voice Algenib] [--max-requests 20] [--dry-run] [--force]
+//   node scripts/narrate.js generate <project-dir> [--takes 2] [--only b4,...] [--voice Algenib] [--max-requests 20] [--dry-run] [--force]
 //   node scripts/narrate.js assemble <project-dir> [--pick b1=1,b2=2,...] [--allow-mismatch b1,b4]
 //
 // Existing takes are kept: generate skips them (so a failed run resumes) unless --force.
@@ -24,7 +24,7 @@ const TIMEOUT_MS = 90000;
 // ---------------------------------------------------------------- arguments
 function parseArgs(argv) {
   const [cmd, dir, ...rest] = argv;
-  const o = { cmd, dir, takes: 2, maxRequests: 20, dryRun: false, force: false, pick: {}, allowMismatch: new Set(),
+  const o = { cmd, dir, takes: 2, maxRequests: 20, dryRun: false, force: false, pick: {}, allowMismatch: new Set(), only: null,
     ttsModel: 'gemini-3.8-flash-tts', sttModel: 'gemini-3.5-transcribe', voice: null };
   const posInt = (name, v) => {
     if (!/^[1-9][0-9]*$/.test(String(v))) throw new Error(`${name} needs a positive whole number, got "${v}"`);
@@ -44,6 +44,7 @@ function parseArgs(argv) {
       for (const kv of need(a, v).split(',')) { const [b, t] = kv.split('='); if (!b) throw new Error('bad --pick ' + kv); o.pick[b] = posInt('--pick ' + b, t); }
       i++;
     }
+    else if (a === '--only') { o.only = new Set(need(a, v).split(',')); i++; }
     else if (a === '--allow-mismatch') { for (const b of need(a, v).split(',')) o.allowMismatch.add(b); i++; }
     else throw new Error('unknown option ' + a);
   }
@@ -249,12 +250,16 @@ async function generate(o, proj, outDir) {
   const key = process.env.GEMINI_API_KEY || process.env.GEMINI_VIDEO_API_KEY;
   const voice = o.voice || (proj.vd.tts && proj.vd.tts.voice) || 'Algenib';
   const lang = (proj.vd.tts && proj.vd.tts.languageCode) || 'en-AU';
-  const planned = proj.lines.length * o.takes * 2;
-  console.log(`${proj.lines.length} lines x ${o.takes} takes, voice ${voice}: ${planned} requests (cap ${o.maxRequests})`);
+  const lines = proj.lines.filter(l => !o.only || o.only.has(l.beat));
+  if (o.only) for (const b of o.only) if (!lines.some(l => l.beat === b)) throw new Error(`--only: no spoken line in beat ${b}`);
+  const exists = (l, t) => !o.force && fs.existsSync(path.join(outDir, `${l.beat}-take${t}.json`)) && fs.existsSync(path.join(outDir, `${l.beat}-take${t}.wav`));
+  let toMake = 0; for (const l of lines) for (let t = 1; t <= o.takes; t++) if (!exists(l, t)) toMake++;
+  const planned = toMake * 2;
+  console.log(`${lines.length} lines, takes 1 to ${o.takes}, ${toMake} new, voice ${voice}: ${planned} requests (cap ${o.maxRequests})`);
   if (planned > o.maxRequests) throw new Error('over the request cap; raise --max-requests or lower --takes');
   budget.max = o.maxRequests;
   if (o.dryRun) {
-    for (const l of proj.lines) {
+    for (const l of lines) {
       const r = ttsRequest(l, proj.vd, voice);
       console.log(`\n[${l.beat}] text: ${r.contents[0].parts[0].text}\n      style: ${r.contents[0].parts[0].speech_metadata.style}`);
     }
@@ -262,7 +267,7 @@ async function generate(o, proj, outDir) {
   }
   if (!key) throw new Error('set GEMINI_API_KEY or GEMINI_VIDEO_API_KEY in the environment');
   fs.mkdirSync(outDir, { recursive: true });
-  for (const l of proj.lines) {
+  for (const l of lines) {
     for (let t = 1; t <= o.takes; t++) {
       const base = path.join(outDir, `${l.beat}-take${t}`);
       if (!o.force && fs.existsSync(base + '.json') && fs.existsSync(base + '.wav')) {

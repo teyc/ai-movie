@@ -125,17 +125,18 @@
                 "text": "Not Dad.",
                 "delivery": {
                   "marked": "(breath) Not Dad.",
-                  "intent": "Deadpan correction, almost a shrug: no disappointment, no wink",
+                  "intent": "Deadpan correction, almost a shrug, but every word clear: this line is the turn of the film",
                   "emphasis": [],
-                  "inflection": "Flat, then falling; even stress on both words",
-                  "pace": "Quick and short",
+                  "inflection": "Flat on 'Not', then a small, definite fall on 'Dad'",
+                  "pace": "Unhurried for its two words: a hair of air between 'Not' and 'Dad', and a clearly voiced D on 'Dad'. Deadpan is flat, not rushed",
                   "pauses": [],
                   "breaths": [
                     "Before 'Not', silent (taken in the b3 silence)",
                     "After 'Dad', silent, through the rest of the shot"
                   ],
                   "note": "Comes just after the scooter's brake squeak, not on the cut",
-                  "placedBy": "sh4's anchor: 'Not' lands 8 frames after the cut, just after the brake squeak"
+                  "placedBy": "sh4's anchor: 'Not' lands 8 frames after the cut, just after the brake squeak",
+                  "revised": "2026-11-24: take 1, read 'quick and short', was too clipped to make out on a speaker (the human, and the transcriber, heard 'Not that')"
                 }
               }
             ],

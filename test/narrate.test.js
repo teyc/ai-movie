@@ -116,3 +116,8 @@ test('hand marks apply only to the take they were made on', () => {
   assert.strictEqual(t2.words[0].start, 0.25);
   assert.strictEqual(take.words[0].start, 0.3, 'the original words are not mutated');
 });
+
+test('--only selects beats, and a beat with no spoken line is an error', () => {
+  assert.deepStrictEqual([...n.parseArgs(['generate', 'x', '--only', 'b4']).only], ['b4']);
+  assert.throws(() => n.parseArgs(['generate', 'x', '--only']), /needs a value/);
+});
