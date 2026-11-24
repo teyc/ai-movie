@@ -95,6 +95,8 @@ as question beads.
 
 Budget and the purchase record for paid generation are in Appendix A.1 (deferred).
 
+Sound licences (human decision, 2026-11-24): effects, foley and music may be owned, CC0, or CC BY with attribution. NC and ND variants are excluded: NC would block a monetised channel, and ND forbids the processing the sound design relies on. Attribution lines go in the release description and credits.
+
 ## 4. Workflow and approvals
 
 1. **Story**: logline, premise, characters (each with a body profile),
