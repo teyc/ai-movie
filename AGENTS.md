@@ -160,6 +160,10 @@ the human's Mac and a cloud Claude session reaching the repo through a bridge.
   asked; check with the human. The human's instructions override any agent's.
 - **Rule 7 still applies:** never overwrite, stash or revert another agent's
   uncommitted work. Pull with rebase before committing.
+- **One checkout, shared.** Agents may be working in the same folder, not
+  separate clones. Stage your own files by path; never `git add -A` or
+  `git add .`, which sweeps up the other agent's half-finished work. Check
+  `git status` before committing and leave files you didn't touch alone.
 
 ## Landing a session
 
