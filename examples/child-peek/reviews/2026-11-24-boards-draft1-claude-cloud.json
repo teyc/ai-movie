@@ -1,0 +1,178 @@
+{
+  "kind": "phone-review",
+  "version": 1,
+  "id": "2026-11-24-boards-draft1-claude-cloud",
+  "payload": {
+    "date": "2026-11-24",
+    "reviewer": {
+      "who": "claude-cloud",
+      "newToProject": false,
+      "note": "Not a fresh viewer: this is the author's own gap-hunting review, recorded so later reviews can be compared with it"
+    },
+    "shown": {
+      "what": "boards",
+      "files": [
+        {
+          "path": "examples/child-peek/boards.png",
+          "digest": "sha256:379f271797bb313b476025a0c16a6f36de16f80cbf7707493e5afc2afd24af6b",
+          "note": "First-draft contact sheet, commit 9d50111"
+        }
+      ]
+    },
+    "display": {
+      "device": "desktop, contact sheet image",
+      "crop": "180x320 portrait boards",
+      "sizeOnScreen": "about 370 px tall per board; thumbnail judged by eye",
+      "viewingDistanceCm": null,
+      "secondsPerShot": "untimed",
+      "captionBand": "off",
+      "sound": "off"
+    },
+    "unaidedQuestions": [
+      {
+        "question": "What happened?",
+        "answer": "Not asked: reviewer knows the story"
+      }
+    ],
+    "perShot": [
+      {
+        "shot": "sh1",
+        "mustSee": [
+          {
+            "item": "a small figure at the rail",
+            "seen": false,
+            "note": "Mia is tiny and the balcony floats on blank paper; she reads only at full size"
+          },
+          {
+            "item": "the lit window behind her",
+            "seen": true,
+            "note": "A plain rectangle; not lit until the value pass"
+          },
+          {
+            "item": "the empty parking bay at the kerb below",
+            "seen": false,
+            "note": "Not in this draft; added to the shot list later by am-mcd.15"
+          }
+        ],
+        "mustHear": [
+          {
+            "item": "the streetlight ticking on (support)",
+            "heard": null,
+            "note": "Silent board review; not assessed"
+          }
+        ],
+        "notes": "Subject is upper-left; the shot list says upper-right third. No street, streetlight or building below."
+      },
+      {
+        "shot": "sh2",
+        "mustSee": [
+          {
+            "item": "Mia leaning towards screen-left",
+            "seen": false,
+            "note": "She stands square-on in the centre, not leaning"
+          },
+          {
+            "item": "both hands on the rail",
+            "seen": false,
+            "note": "One arm crosses behind the rail; hands not readable"
+          }
+        ],
+        "mustHear": [
+          {
+            "item": "fingers tapping the rail, after 'car' (support)",
+            "heard": null,
+            "note": "Silent board review; not assessed"
+          }
+        ],
+        "notes": "No lead room on the left; face direction hard to read. Balusters and legs run past the frame border."
+      },
+      {
+        "shot": "sh3",
+        "mustSee": [
+          {
+            "item": "one bright light rounding the corner under the streetlight",
+            "seen": false,
+            "note": "Only diagonal lines and a small box; no corner, streetlight or light"
+          },
+          {
+            "item": "Mia's raised shoulder at the right edge, above the rail",
+            "seen": false,
+            "note": "Not readable"
+          }
+        ],
+        "mustHear": [
+          {
+            "item": "an engine approaching from screen-left, starting about 0.5 s before the cut (featured)",
+            "heard": null,
+            "note": "Silent board review; not assessed"
+          }
+        ],
+        "notes": "Fails: the point-of-view shot reads as abstract lines. Strokes cross the frame border."
+      },
+      {
+        "shot": "sh4",
+        "mustSee": [
+          {
+            "item": "a scooter, clearly two-wheeled, with a square pizza box on the back",
+            "seen": false,
+            "note": "Reads as a man sitting on a box"
+          },
+          {
+            "item": "its single headlight, the light from sh3",
+            "seen": false,
+            "note": "No headlight"
+          }
+        ],
+        "mustHear": [
+          {
+            "item": "the engine resolving into a scooter's whine on the cut (featured)",
+            "heard": null,
+            "note": "Silent board review; not assessed"
+          },
+          {
+            "item": "a brake squeak just before 'Not Dad' (featured)",
+            "heard": null,
+            "note": "Silent board review; not assessed"
+          }
+        ],
+        "notes": "Fails: the reveal is unreadable. Needs the scooter, rider and box props."
+      },
+      {
+        "shot": "sh5",
+        "mustSee": [
+          {
+            "item": "both arms up",
+            "seen": true,
+            "note": "Reads well"
+          },
+          {
+            "item": "the window behind her",
+            "seen": true,
+            "note": "Yes"
+          }
+        ],
+        "mustHear": [
+          {
+            "item": "the scooter engine cutting out, then a beat of room tone before 'Even better' (support)",
+            "heard": null,
+            "note": "Silent board review; not assessed"
+          },
+          {
+            "item": "the music bed entering under 'better'",
+            "heard": null,
+            "note": "Silent board review; not assessed"
+          }
+        ],
+        "notes": "The best board. Check her pelvis and legs, and balusters crossing her body; strokes cross the frame border."
+      }
+    ],
+    "verdict": "fail",
+    "actions": [
+      "am-e-board-1wg.17 (street props)",
+      "am-e-board-1wg.18 (frame clipping)",
+      "am-mcd.15 (parking bay, one light)",
+      "am-mcd.3 (re-block all five boards)"
+    ],
+    "producerMinutes": null
+  }
+}

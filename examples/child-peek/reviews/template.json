@@ -1,0 +1,65 @@
+{
+  "kind": "phone-review",
+  "version": 1,
+  "id": "<date>-<what>-<reviewer>",
+  "payload": {
+    "date": "YYYY-MM-DD",
+    "reviewer": {
+      "who": "anonymous label, e.g. 'friend A' or 'claude-cloud'",
+      "newToProject": true
+    },
+    "shown": {
+      "what": "boards | animatic | master",
+      "files": [
+        {
+          "path": "...",
+          "digest": "sha256:..."
+        }
+      ]
+    },
+    "display": {
+      "device": "phone model or 'desktop at phone size'",
+      "crop": "delivery crop, e.g. 1080x1920 portrait",
+      "sizeOnScreen": "e.g. full-screen phone, or 360 px tall thumbnail",
+      "viewingDistanceCm": 40,
+      "secondsPerShot": "as cut | fixed N",
+      "captionBand": "on | off",
+      "sound": "on | off"
+    },
+    "unaidedQuestions": [
+      {
+        "question": "What happened?",
+        "answer": "the viewer's words, before any prompting"
+      },
+      {
+        "question": "What did the child feel?",
+        "answer": "..."
+      }
+    ],
+    "perShot": [
+      {
+        "shot": "sh1",
+        "mustSee": [
+          {
+            "item": "copied from shots.json",
+            "seen": true,
+            "note": ""
+          }
+        ],
+        "mustHear": [
+          {
+            "item": "...",
+            "heard": true,
+            "note": ""
+          }
+        ],
+        "notes": ""
+      }
+    ],
+    "verdict": "pass | fail | revise",
+    "actions": [
+      "bead ids or 'none'"
+    ],
+    "producerMinutes": 0
+  }
+}
