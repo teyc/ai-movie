@@ -1,0 +1,23 @@
+{
+  "kind": "layer-manifest",
+  "version": 1,
+  "shot": "sh2",
+  "scene": "../../../examples/child-peek/scenes/sh2.json",
+  "description": "Hand-authored fixture shaped like child-peek sh2: wall and window behind, Mia with her hands on the rail, balusters in front. Depths are camera distances from the sh2 scene record.",
+  "canvas": { "w": 200, "h": 340 },
+  "frame": { "x": 10, "y": 10, "w": 180, "h": 320 },
+  "layers": [
+    { "id": "wall", "art": "wall.svg", "digest": "sha256:3f2c29d429e2319c7144f1b10ccfedc6bc29075e56682db29b49b0f5127af54b", "depth": 2.55, "origin": [100, 170] },
+    { "id": "mia", "art": "mia.svg", "digest": "sha256:4f4fecae53e600c634142054dd4cb2c8d5470fd5db8727c606f19484d295f5a2", "depth": 1.9, "origin": [100, 170], "group": "rail" },
+    { "id": "balusters", "art": "balusters.svg", "digest": "sha256:4d8717cb279dbcf8536e194221169eda59ef6b596d31c5f52ffe2e3e6f89a082", "depth": 1.7, "origin": [100, 170], "group": "rail" }
+  ],
+  "move": {
+    "easing": "ease-in-out",
+    "from": { "wall": { "t": [0, 0], "s": 1 }, "rail": { "t": [0, 0], "s": 1 } },
+    "to": { "wall": { "t": [-4.8, 0], "s": 1 }, "rail": { "t": [-7.2, 0], "s": 1 } }
+  },
+  "fixed": [
+    { "id": "paper", "kind": "paper", "stack": "under", "art": "paper.svg", "digest": "sha256:b6fd3a19f2e10f72cb0f992da3fd6badb0b826e64e763c0d3b540f23397cd37c" },
+    { "id": "caption", "kind": "caption", "stack": "over", "box": [16, 262, 148, 40] }
+  ]
+}

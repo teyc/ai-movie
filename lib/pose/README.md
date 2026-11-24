@@ -10,6 +10,7 @@ record. Plain Node.js, no dependencies, no image model. Output is SVG.
 | `mannequin.js` | The model and renderer |
 | `profiles.json` | Body profiles (toddler to old, female and long-torso / long-leg variants) |
 | `cli.js` | Command line |
+| `layers.js` | Parallax layer manifest: validator, digests, move interpolation |
 
 ## Use
 
@@ -24,6 +25,9 @@ node lib/pose/cli.js render resource/pose/dash.json --construction
 # contact sheet of a folder, and the body-profile line-up
 node lib/pose/cli.js sheet resource/pose index.svg
 node lib/pose/cli.js lineup profiles.svg --yaw 35
+
+# validate a parallax layer manifest and print its digest
+node lib/pose/cli.js layers test/fixtures/layers/manifest.json
 ```
 
 From code:
@@ -119,6 +123,63 @@ Multipliers on the adult skeleton: `h` (height), `leg`, `torso`, `arm`,
 `neck`, `head`, `sh` (shoulder width), `hip`, `rib`, `girth`, `belly`,
 `breast`. `post` adds default posture offsets per joint type, and `flex`
 scales joint ranges.
+
+## Layer manifest
+
+One manifest per shot describes a board split into cutout layers by depth,
+and the parallax move assembly applies to them (plan section 7a.3). It is
+written by hand in phase A and by the exporter in phase B, and read by the
+compiler. The fixture is `test/fixtures/layers/manifest.json`; validate with
+`node lib/pose/cli.js layers <manifest.json>`.
+
+```json
+{
+  "kind": "layer-manifest",
+  "version": 1,
+  "shot": "sh2",
+  "scene": "scenes/sh2.json",
+  "canvas": { "w": 200, "h": 340 },
+  "frame": { "x": 10, "y": 10, "w": 180, "h": 320 },
+  "layers": [
+    { "id": "wall", "art": "wall.svg", "digest": "sha256:…", "depth": 2.55, "origin": [100, 170] },
+    { "id": "mia", "art": "mia.svg", "digest": "sha256:…", "depth": 1.9, "origin": [100, 170], "group": "rail" },
+    { "id": "balusters", "art": "balusters.svg", "digest": "sha256:…", "depth": 1.7, "origin": [100, 170], "group": "rail" }
+  ],
+  "move": {
+    "easing": "ease-in-out",
+    "from": { "wall": { "t": [0, 0], "s": 1 }, "rail": { "t": [0, 0], "s": 1 } },
+    "to": { "wall": { "t": [-4.8, 0], "s": 1 }, "rail": { "t": [-7.2, 0], "s": 1 } }
+  },
+  "fixed": [
+    { "id": "paper", "kind": "paper", "stack": "under", "art": "paper.svg", "digest": "sha256:…" },
+    { "id": "caption", "kind": "caption", "stack": "over", "box": [16, 262, 148, 40] }
+  ]
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `canvas` | `{w, h}`: the common artwork size. Every layer is drawn at full canvas size, transparent where empty. Units are the artwork's own: SVG user units (the scene's drawing units), or pixels for raster layers |
+| `frame` | `{x, y, w, h}`: the delivery window inside the canvas. The margin around it is overscan, and it caps how far a move can go before an edge shows. Must lie inside the canvas |
+| `board` | Optional `{art, digest}`: the fully inked board at frame size. The zero-offset composite's frame window must match it (the exporter's flatten-and-compare check) |
+| `layers` | Ordered back to front; the list order is the stacking order. `art` is a path inside the manifest's folder; `digest` is `sha256:` and the 64 hex digits of the file's bytes |
+| `layers[].depth` | Camera distance in metres of the nearest point the layer shows, taken from the scene record (true geometry, not the renderer's depth `bias`). It may not increase down the list. A group's depth is its nearest layer's |
+| `layers[].origin` | `[x, y]` in canvas units: the point the layer scales about |
+| `layers[].group` | Layers that touch (a hand on a rail) share one group and so one transform, so a grip or a foot can't slide. A layer without a group is its own group, named by its `id`. Layers in a group must have the same origin, and no other layer's `id` may equal a group name |
+| `move` | Optional; without it the board is held still. `from` and `to` map group names to `{t: [dx, dy], s}`. A group not named keeps the identity (`t: [0, 0]`, `s: 1`). `s` must be above 0. `easing` is one of `linear`, `ease-in` (u²), `ease-out` (1 − (1 − u)²), `ease-in-out` (3u² − 2u³); optional `easings` maps a group to its own. The transforms are authoritative: depth only checks them, and a nearer group must translate and rescale at least as much as any farther one |
+| `fixed` | Items fixed in delivery space, not moved: `paper` (at most one), `frame-marks` (each with `art` and `digest`, drawn at frame size) and `caption` (a `box` `[x, y, w, h]` inside the frame). `stack` is `under` or `over` the layers; paper is always under |
+
+A point `p` of a layer's art lands at `origin + s · (p − origin) + t` in
+canvas space, and at that minus `[frame.x, frame.y]` in delivery space. The
+move has no duration: it runs over the shot, from `u = 0` on the shot's first
+frame to `u = 1` on its last, and the shot's length comes from the cuts in
+the timed voice. `t` and `s` are interpolated by the eased `u`
+(`layers.transformAt(move, group, u)`).
+
+The manifest's own digest is sha256 of its file bytes. The edit pins it so
+preview and assembly use the same split. Unknown fields are rejected so typos
+fail. Checking that no cutout edge, gap or frame edge shows during the move
+belongs to the compiler (am-e-asm-qgh.5), not the validator.
 
 ## Known limits
 

@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="340" viewBox="0 0 200 340">
+  <path d="M0 224 H200" stroke="#888" stroke-width="5"/>
+  <path d="M20 224 V340 M60 224 V340 M100 224 V340 M140 224 V340 M180 224 V340" stroke="#888" stroke-width="3"/>
+</svg>
