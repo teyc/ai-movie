@@ -44,6 +44,14 @@ blocking turns into boards.
    gets a distinct shot; the final image rhymes with the first.
 7. **Check the timing**: shot durations sum to the screenplay's beats; no
    shot is shorter than the time a viewer needs to find its must-see element.
+8. **Choose each transition** into the shot: a hard cut (default); a cut
+   to a new angle on the same action; a match cut (shape, movement or
+   eyeline carries across); a hold on the outgoing frame before the cut; a
+   cutaway or empty shot (a place without people) to mark time or breathe;
+   a dissolve for time passing. Record it with the reason when it is not a
+   hard cut.
+9. **Write a blocking line for each shot**: where each character stands and
+   faces in the set, so scene blocking does not have to guess.
 
 ## Choosing, quickly
 
@@ -78,6 +86,8 @@ Keep moves small; near layers move more than far ones.
     "move": {"kind": "parallax", "type": "push-in", "amount": 0.06, "seconds": 4.5},
     "continuity": {"axis": "street-A", "cameraSide": "street", "looks": [{"who": "mia", "at": "street-left"}]},
     "mustSee": ["..."], "mayHide": ["..."],
+    "transition": {"kind": "cut"},
+    "blocking": "Mia at the rail centre, facing the street, corner to her left",
     "startFrom": {"pose": "child-peek"}, "reason": "..."}]
 }}
 ```

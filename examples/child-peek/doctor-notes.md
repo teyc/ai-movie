@@ -29,3 +29,13 @@ tone stays warm, so no further jokes were added.
 3. The last line is understated, so the joke lands on the picture.
 
 New total: 17.5 s against an 18 s target.
+
+## Tension curve
+
+| Beat | b1 | b2 | b3 | b4 | b5 |
+|---|---|---|---|---|---|
+| Tension (0 to 10) | 2 | 3 | 7 | 5 | 2 |
+
+Peak at b3, the false hope, just before the twist; b4 drops (letdown), b5
+releases into delight. There is no dip before the peak, which is acceptable
+at 17.5 seconds: the climb from b1 to b3 is the whole set-up.

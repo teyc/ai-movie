@@ -38,6 +38,12 @@ Work through every check. For each problem write a note with severity
 ### 4. Balance and tone
 - Plot the emotional line beat by beat (calm, curious, tense, low, warm,
   funny, moved). Flag a flat line, or a tone that swings without cause.
+- Score tension from 0 to 10 for every beat and include the curve as a
+  table in the notes. Check the shape: the highest point sits at or just
+  before the turn, there is at least one dip before it to climb from, and
+  the end resolves below the peak. Flag two neighbouring beats with the same
+  score and no other change, and a peak in the first third of the film
+  unless the structure is in medias res.
 - Light and dark: does the film earn its ending with at least one beat of
   contrast (a doubt, a small loss, a false hope)?
 - Is the tone consistent with the style profile and the story's register?

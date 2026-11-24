@@ -1,8 +1,9 @@
 # Plan for ai-movie
 
-Status: **draft 6**, 2026-11-24. Drafts 5 and 6 record the human's scope
+Status: **draft 7** (final refinement round applied), 2026-11-24. Drafts 5 and 6 record the human's scope
 decisions (section 1.1): the first product is a storyboard film, moved by
-parallax; deferred material is in Appendix A. Draft 2 was a synthesis of three independent
+parallax; deferred material is in Appendix A. Draft 7 applies round 3, the
+last refinement round. Draft 2 was a synthesis of three independent
 plans:
 
 - draft 1 (Claude, written with the human during the storyboard sessions),
@@ -55,7 +56,8 @@ until the storyboard film works.
 ### Non-goals for now
 
 - On-camera presenters, lip sync, or real people's likenesses.
-- Character consistency across shots (a hook is left for drama later).
+- A general-purpose facial animation rig. Character identity across held
+  boards *is* required (section 7b).
 - A graphical editor. Records are JSON, edited by hand or by an LLM.
 
 ## 2. Principles
@@ -84,7 +86,7 @@ as question beads.
 
 | ID | Question | Recommendation | Notes |
 |---|---|---|---|
-| Q1 | Format | Narrated explainer first. Then a silent two-person scene, then dialogue drama only if the silent scene reads | All three plans agree on explainer first |
+| Q1 | Format | Decided in part: a narrated story first (the child-peek micro-story, `examples/child-peek/`); the explainer workflow remains for briefs that pose a factual question. Open: narrator only, or dialogue too, for phase B | Human scope decision, round 3 |
 | Q2 | Generation model and route | Decide by experiment (Appendix A.5). Candidates: Runway Gen-4 Image for reference stills; Gen-4 Turbo, Kling 4.0, Seedance 2.5, Wan 3.0, MiniMax H3 or Gemini Omni Flash for image-to-video | verify (2026-11-24) |
 | Q3 | Text-to-speech with word timings | Pilot with a human recording or Polly. Choose between Amazon Polly (cheapest; word marks give start times, ends estimated) and Cartesia Sonic (word start and end times, 44 languages) after a two-sentence test | verify (2026-11-24) |
 | Q4 | Platform, shape, length | YouTube Shorts first, 1080 x 1920, 30 fps, 30 to 45 seconds. Landscape 90 to 150 second explainers later | Shorts accept square or vertical up to 3 minutes; verify (2026-11-24) |
@@ -160,7 +162,9 @@ Every record on disk uses one envelope and is validated on read and write.
 |---|---|
 | brief | audience, question, evidence, locale, delivery `{width, height, fps}`, cashCapUsd, style profile id |
 | story | logline, premise, characters `[{id, characterSheet, description}]`, setting, turning change, audience, target length, style profile id |
-| character sheet | id, name, role, body profile, silhouette shapes, garments as forms, value per garment, signature props, face option, turnaround hashes (section 7b) |
+| character sheet | id, name, role, body profile, silhouette shapes, garments as forms, value per garment, signature props, face option, named expressions, turnaround hashes (section 7b) |
+| expression | character id, named expression, intensity, onset (cue or picture anchor), duration |
+| set | id, revision, floor and axes, fixed props, landmarks, light sources, all in set coordinates |
 | scene (screenplay) | number, location, time of day, characters present, beats in order |
 | style profile | framing, angle and lens habits, movement, tonal key and contrast, light, palette, texture, editing rhythm, image aspect ratio (section 7a.6) |
 | beat | scene, what happens, intended effect (understand or feel), characters, spoken (narration or dialogue, with speaker), display, cues `[{id, word, occurrence}]`, evidence, target duration, minimum screen time |
@@ -204,6 +208,14 @@ half-open; an interval must be at least one frame long.
   and its chosen frame (the first frame the receiver withdraws), which also
   allows a silent film with no voice or captions. Retiming a picture beat
   reopens the animatic. Cut positions never come from rescanning captions.
+- **Pauses in the voice edit.** The rough cut may add or trim a pause at a
+  producer-marked clean phrase boundary. The approved take and its marks are
+  kept; the edit stores ordered source sample ranges and inserted silences,
+  renders the edited voice, and derives its hash and a source-to-edit sample
+  map through which cues and caption bounds are resolved. A cue removed by a
+  trim blocks assembly; a splice that damages breath or inflection calls for
+  a pickup. Test: a half-second pause before the reaction moves later speech,
+  captions and the music bed together and leaves earlier cues in place.
 - Changing a board hash, media digest, source range or voice hash marks the
   affected intervals and the master stale; changing only a mix region does
   not rebuild boards.
@@ -255,6 +267,15 @@ Version 2 adds:
 }}
 ```
 
+**Shared sets.** Boards of one location reference a shared set revision:
+floor and axes, fixed props, landmarks and motivated light sources in set
+coordinates. A camera setup references the set and stores its view; a board
+references the setup and adds cast, movable prop state and any beat-motivated
+light change. Inline sets still work for one-offs. References resolve to the
+same geometry before projection and their digests go in the board receipt.
+Test: on a wide, reverse and return, moving the shared window once moves it
+(and the key light) in every dependent view.
+
 Solving order: world props, then each figure against its anchors, then held
 props. Circular anchors (hands solved against a box placed by those hands)
 are rejected.
@@ -277,13 +298,21 @@ a changed spoken line rebuilds its audio, captions, affected cuts, mix and
 master. Outputs are written to a temporary file, checked, then renamed into
 place.
 
+**Source media.** Original recordings, imported art, music and any
+hand-retouched layer are source media: at ingest each is copied into a
+durable project asset store keyed by digest, with a backup outside the run
+directory, and a small committed manifest links digest, role and provenance.
+Runs cache only reproducible derivatives. Before signing off the pilot, the
+project is restored into an empty run directory and rebuilt offline, and
+cues, cuts and selected media are checked against the approved edit.
+
 See Appendix A.2 for paid-call bookkeeping (deferred with generation).
 
 ## 6. Stages
 
 | Stage | Method | Failure handling | Acceptance |
 |---|---|---|---|
-| Screenplay | Story to scenes and beats, each beat with what happens and its intended effect. For an explainer: opening question, observable change, answer. Each beat has a target duration and minimum screen time; the word budget comes from a test read or the chosen voice's measured rate (65 to 90 words for 30 to 45 seconds is only a first estimate). Claims tied to evidence | One redraft after notes; unsupported claims rejected; a beat that doesn't fit gets a shorter line or fewer shots | The timed read leaves at least a second of lead and a second of resolution around each observable change; a viewer can answer the opening question from a specific image; producer approves meaning and pronunciation |
+| Screenplay | Story to scenes and beats, each beat with what happens and its intended effect. For an explainer: opening question, observable change, answer. Each beat has a target duration and minimum screen time; the word budget comes from a test read or the chosen voice's measured rate (65 to 90 words for 30 to 45 seconds is only a first estimate). Claims tied to evidence | One redraft after notes; unsupported claims rejected; a beat that doesn't fit gets a shorter line or fewer shots | The timed read leaves room for each beat's intended recognition, surprise or hesitation at playback speed (about a second of lead and resolution is the default, not a rule); a viewer can answer the opening question from a specific image; producer approves meaning and pronunciation |
 | Voice | Human recording or TTS, decoded to 48 kHz mono. For a short human read, hand-marked phrase bounds and cut cues on the actual take, stored with the audio hash | Missing required marks or text mismatch blocks the beat | Ordered onsets, correct cue words, no clipped syllables |
 | Shot list | Per beat: what is different on screen at the end, camera side, focal subject, cue, must-see, may-hide | Shots that merely illustrate the same noun are cut; tighten the script instead | Every line maps to a shot or an intentional hold; adjacent screen direction checked |
 | Storyboard | Shot to scene record (section 7), render sketch and diagnostics | Two repair rounds, then manual blocking | Required action identifiable at phone size with captions covered; hard diagnostics pass |
@@ -459,7 +488,17 @@ The sketch must show these choices, or the animatic cannot be judged:
   hidden behind a cutout) are filled by drawing the full background, not
   just its visible part; moves stay small enough that no cutout edge or gap
   shows; layer depths come from the scene record, so parallax is consistent
-  with the board's perspective. Full 3D camera paths stay for later.
+  with the board's perspective. A layer manifest records the common canvas,
+  ordered transparent artwork by digest, transform origins, and start and end
+  translation and scale with easing per group; paper, frame marks and caption
+  coordinates stay fixed in delivery space, and the edit pins the manifest
+  digest so preview and assembly agree. A rail or limb is split where its
+  front-and-back order changes (an arm crossing a rail); touching parts share
+  one transform so a grip or a foot cannot slide. The zero-offset composite
+  must match the fully inked board within rasterisation tolerance, and the
+  whole move is checked for exposed gaps, edges and contacts. If a board
+  cannot be separated, it is held still and the drift goes on a separable
+  shot. Full 3D camera paths stay for later.
 - **A reveal is not an enlargement.** Projection divides by depth, so a
   camera moving sideways changes what is hidden; scaling a still does not.
   A held still allows only a crop inside its bounds, previewed exactly,
@@ -506,8 +545,9 @@ level:
 | Movement | Allowed moves and their character: locked-off, precise lateral tracking, whip pans, handheld, slow push-ins |
 | Tonal key and contrast | Default key, contrast range, whether black-and-white |
 | Light | Typical motivations, hard or soft, time of day, practical lights |
-| Palette | Colour scheme or monochrome; used by generation, ignored by the value pass |
-| Texture | Grain, softness, halation; generation and grading only |
+| Paper, ink and fills | Paper, ink and the two or three drawable fill values; a colour profile supplies flat swatches with distinct value roles, or approves a monochrome interpretation on the reference strip |
+| Drawing marks | Outline and interior line widths at delivery size, wobble, optional character hatching, and how detail simplifies in a wide and holds in a close-up; applied to characters, sets and inserts alike |
+| Palette and texture for generation | Colour scheme, grain, softness (Appendix A; not drawn in boards) |
 | Editing | Average shot length, cut types, transitions, rhythm against narration |
 | Aspect ratio | Within the delivery frame: full frame, or a letterboxed or pillarboxed image area |
 
@@ -521,6 +561,12 @@ Illustrative profiles, described by their visual traits:
 | Film noir, black and white | Low-key, hard single sources, deep shadows and silhouettes, venetian-blind and window shadow patterns, wet streets at night, low and canted angles, slow push-ins |
 
 How it is used:
+
+- At approval 1 the profile is resolved against what the boards and
+  parallax can actually show. A signature choice that cannot appear gets a
+  drawable substitute (a thriller's handheld energy carried by a held canted
+  wide and a hard cut to a tight detail) or another profile is chosen, shown
+  on the reference strip and previewed at speed.
 
 - The shot list and the scene step choose from the profile's preferred
   values first; a deliberate break is allowed but must carry a reason.
@@ -583,6 +629,16 @@ Rules:
   included), facial features and hatching, and must render them the same way
   in every shot. Consistency is the rule for characters, not omission.
 - The character layer stays in the sketch style set by the style profile.
+- **Identity on the sheet, performance on the board.** The sheet holds
+  named expressions only as the screenplay needs them, from a small
+  vocabulary (neutral, concern, surprise, fear, relief, amusement, sadness,
+  anger), each drawn in the same face proportions. A shot selects one with
+  its pose and gaze, and an `expression` record sets its onset (cue or
+  picture anchor) and duration; a missing onset blocks the reaction board.
+  Expressions are resolved after gaze and head turn so features stay on the
+  turned head. Until the hands-and-faces decision, reactions are carried by
+  posture, gesture and light, which the phase A example does; hand-drawn
+  reaction details on a phase A board are acceptable.
 - Every figure in a scene record refers to a character sheet; the story's
   character list links each character to its sheet.
 - Recognisability test: in a contact sheet of thumbnails, a fresh viewer
@@ -594,7 +650,7 @@ Rules:
 
 | Order | Change | Why now | Done when |
 |---|---|---|---|
-| 1 | Regression tests on the 18 reference scenes and the warnings | Everything below changes drawing code | Any drawing change fails until goldens are updated deliberately |
+| 1 (done) | Regression tests: 18-scene manifest, clean and construction frames, sheet, line-ups, expected warnings (`test/pose.golden.test.js`) | Everything below changes drawing code | Existing fixtures pass unchanged whenever new layers are disabled |
 | 2 | Per-render state: remove globals (`P`, `GS`, `HS`, `BL`, `EX`, `FACE`, `CLAMPS`, `rnd`) | Multi-figure and repeat renders depend on it | Render order cannot change any output |
 | 3 | Public fixed camera: vertical field of view, delivery frame size, near-plane clipping. Build on the fixed scale-and-offset path `draw` already uses for `renderLineup` (`sh.fix`) | Scene records always auto-fit the projected figure into a 320 x 200 frame, so a camera cannot stay put across shots or place a subject on a third | A locked camera keeps a world marker on the same pixel while the subject moves; a primitive crossing the near plane is clipped, never projected from behind the lens |
 | 4 | IK guards, joint limits on reach targets, named contact sites, coded diagnostics (section 7, step 5) | Needed by section 7 | An impossible elbow on a reachable target is reported with its code |
@@ -623,6 +679,11 @@ shapes, night, headlights and wet-ground lighting.
   local defects. A **renderer manifest** names every fixture, its seed, its
   expected warning codes and whether it is a frame, sheet or line-up case; a
   folder scan may discover files but does not decide coverage.
+  **Sequence fixtures:** every approved character sheet rendered in front,
+  side and back views and in its story poses, compared with the turnaround
+  for silhouette, garment attachment, feature placement and value; every
+  frame of each permitted parallax move rendered and checked for exposed
+  gaps, detached cutout edges and breaks in story-bearing set detail.
 - **Geometry.** Unit tests on joints, projection, contacts and warnings,
   independent of drawing. Adversarial cases: invalid enums, unknown joints,
   coincident wrist and shoulder, camera looking straight down, unreachable
@@ -646,9 +707,9 @@ Deferred with generation; see Appendix A.5.
 
 | Phase | Film | Exit decision |
 |---|---|---|
-| A. First micro-story (human decision, 2026-11-24) | 15 to 20 seconds, three or four boards, built from the existing child-peek scene: a child peeks over a balcony rail, sees something, and their face changes. Story to screenplay beats to boards, narrated (human read), captions, one parallax drift, hard cuts. Tests the plumbing and the screenplay-to-beats step together | Shown silently first on a phone: a fresh viewer says what happened. Then voiced: they can retell the moment and say what the child felt |
+| A. First micro-story (human decision, 2026-11-24) | 15 to 20 seconds: `examples/child-peek/` ("Even Better"). The sequence is frozen before blocking: establish the child and the rail, show what she is waiting for, reveal what actually comes (point of view), then her reaction. Her look is aimed at the street, not the camera (the reference `child-peek.json` looks at the lens). Narrated (human read), captions, hard cuts. One parallax drift; a hand-separated board is acceptable in phase A, reusable cutout export can follow in B | Shown silently first on a phone: a fresh viewer says what the child saw and that it mattered to her. Then voiced: they retell the turn and name her feeling. A repeated wide or an undifferentiated reaction is a failed cut even if every board renders cleanly |
 | B. First storyboard film | A short story (about 60 to 90 seconds) from story to screenplay beats to boards: static shots with full cinematic intent in one style profile, two figures and simple environments where the story needs them, a value pass for mood, voice, a light music bed, captions | A fresh viewer retells the story's turn and names what the main character wanted; every shot traces to a beat; producer minutes recorded |
-| C. Repeatable storyboard films | Description-to-scene with repair; three new stories, including one in a different style profile | Two of three films within the cash cap and a 45-minute labour target, counting all active producer minutes from brief to private master (rejected takes and manual repair included, provider waiting excluded) from the labour ledger. Report median and maximum by stage and the number of shots needing manual blocking. Swapping out a hard brief counts as a failure |
+| C. Repeatable storyboard films | Description-to-scene with repair; three new stories, including one in a different style profile | Two of three films within a 45-minute active-producer labour target, counting all work from brief to private master (rejected boards and manual repair included) from the labour ledger. Report median and maximum by stage and the number of shots needing manual blocking. Swapping out a hard brief counts as a failure |
 | D. Continuity, dialogue and languages | A silent parcel handoff; a short dialogue scene with two voices; a second-language recut | Two viewers identify who gives and who hesitates; roles identifiable across cuts; a fluent reviewer signs off |
 | E. Generation and post (optional, later) | Route experiment (Appendix A.5), then one generated still replacing a drawing with a parallel cut, at most one motion shot; post-production beyond the mix if it earns its cost | Private upload under $5 cash; decide whether generated plates beat the drawn film for the cost |
 
@@ -658,9 +719,17 @@ character want) and the visible evidence a correct answer would cite.
 After one normal phone playback with the intended audio and captions, a
 fresh target viewer gives their answer and says which image explained it;
 the unaided response is recorded. A film counts toward the two required
-passes only if it meets the cash, labour and comprehension criteria
+passes only if it meets the labour and comprehension criteria
 together. Time for the check and any recut is counted as labour. One viewer
 can expose a failed explanation; a pass is reported as a pilot observation.
+
+**Before repeating the phase B workflow**, audition one doubtful editorial
+choice in context: keep the approved version and make a cheap alternate from
+the same assets (the reaction locked off instead of drifting, same timing,
+voice, music and captions). Set the question first (does the drift sustain
+anticipation, or pull attention to the rail?), show fresh viewers different
+first versions, keep the version that serves the beat, and log the minutes and
+the reason. Mixed results leave the choice provisional.
 
 ## 12. Risks
 
@@ -748,7 +817,7 @@ They remain **verify** until the purchase record in Appendix A.1 is made:
 | Initial plan | Draft 1 |
 | Competing plans | Done: GPT and Grok |
 | Synthesis | Draft 2 |
-| Refinement rounds | Round 1 (Copilot, GPT, human notes): draft 3. Round 2 (Copilot, GPT): draft 4. Human scope decisions: draft 5. **Round 3 is the last** (human decision): it reviews only the storyboard film, not Appendix A |
+| Refinement rounds | Done. Round 1: draft 3. Round 2: draft 4. Human scope decisions: drafts 5 and 6. Round 3 (final): draft 7 |
 | Build | Starts now, in parallel with round 3 (human decision): golden tests, schemas and the phase A micro-story first |
 | Convert to beads | Updated to draft 5; generation beads deferred (`deferred` label, lowest priority) |
 | Polish beads | One pass after each update |
@@ -811,6 +880,23 @@ apply cleanly.
 | H9 | Claude, accepted by human | Build starts now, in parallel with round 3 | agree | 16 |
 | H10 | Claude, accepted by human | Phase A becomes a micro-story from the child-peek scene | agree | 11 |
 | H11 | Human | Movement by parallax: translate and scale cutout layers by depth, instead of 3D camera paths, for phase B | agree | 1.1, 7a.3, roadmap 3b |
+
+### Round 3 (final)
+
+| # | Source | Change | Severity | Rating | Where and why |
+|---|---|---|---|---|---|
+| C1 | Copilot | Remove the cash cap and provider-wait wording from phases A to D | critical | agree | 11. Inherited from the generation plan; meaningless now |
+| C2 | Copilot | Expression as a pose and shot input, from a small vocabulary, with an onset | critical | partly | 5.1, 7b. Vocabulary, record and onset adopted; feature offsets wait for the hands-and-faces decision, and phase A carries the reaction in posture |
+| C3 | Copilot | Phase A as one readable turn with a frozen sequence | important | agree | 11; the example follows it |
+| C4 | Copilot | Sequence fixtures for character identity and every frame of parallax | important | agree | 9 |
+| G1 | GPT | A playable reaction; look aimed at an object, not the lens; identity required; Q1 updated; hand-separated drift acceptable in A | critical | partly | 1, 3, 7b, 11. All adopted except deferring cutout export to B entirely: it stays ready in A, with manual separation as fallback |
+| G2 | GPT | Executable layer contract: manifest, fixed paper and captions, split where order changes, shared transforms for contacts, zero-offset match, hold as fallback | critical | agree | 7a.3. Checked: `draw()` interleaves rail bars and limbs by depth, so naive layers would mis-stack |
+| G3 | GPT | Shared sets and world light for reverse angles | important | agree | 5.1, 5.2 |
+| G4 | GPT | Style profile limited to what boards can draw, with drawable substitutes | important | agree | 7a.6 |
+| G5 | GPT | Pause insertion in the voice edit; lead and hold as a default, not a rule | important | agree | 5.1, 6 |
+| G6 | GPT | Audition one doubtful editorial choice before repeating phase B | important | agree | 11 |
+| G7 | GPT | Durable source-media store and an offline restore check | important | agree | 5.3 |
+| M1 | microdrama repo (`manju-laoli-skill`) | Numeric tension curve, transition (seam) vocabulary, and stop-and-ask front-end locks adopted into the skills; deeper rules queued for analysis | — | partly | `skills/`; see the analysis bead |
 
 ## Appendix A. Deferred material (phase E: generation and post)
 
