@@ -1,7 +1,8 @@
 # Plan for ai-movie
 
-Status: **draft 5**, 2026-11-24. Draft 5 records the human's scope decision
-(section 1.1): the first product is a storyboard film. Draft 2 was a synthesis of three independent
+Status: **draft 6**, 2026-11-24. Drafts 5 and 6 record the human's scope
+decisions (section 1.1): the first product is a storyboard film, moved by
+parallax; deferred material is in Appendix A. Draft 2 was a synthesis of three independent
 plans:
 
 - draft 1 (Claude, written with the human during the storyboard sessions),
@@ -12,7 +13,7 @@ Draft 3 applied refinement round 1 and draft 4 applies round 2 (Copilot and
 GPT each, in `refinements/ROUND_*.md`). Section 15 records what came from where in the
 synthesis; section 17 rates every refinement change. Facts about outside
 services are marked **verify (2026-11-24)** and must be rechecked, with the
-purchase record in section 3.2, before money is spent.
+purchase record in Appendix A.1, before money is spent.
 
 ## 1. Goal and the core bet
 
@@ -41,7 +42,11 @@ In scope now: story, screenplay with beats, voice, shot list, boards with
 full cinematic intent (size, angle, lens, composition, layers, tonal key,
 light, style profile), animatic, a light music bed, captions, assembly.
 
-Deferred: image and video generation, the route experiment (section 10),
+Movement in phase B is parallax: boards are exported as cutout layers by
+depth, and assembly translates and scales each layer at its own rate
+(section 7a.3).
+
+Deferred: image and video generation, the route experiment (Appendix A.5),
 camera moves beyond simple holds, cost reservation for paid generation,
 post-production beyond the mix (grading, conforming, sound design,
 regeneration). These stay in the plan for a later phase and are not built
@@ -80,38 +85,13 @@ as question beads.
 | ID | Question | Recommendation | Notes |
 |---|---|---|---|
 | Q1 | Format | Narrated explainer first. Then a silent two-person scene, then dialogue drama only if the silent scene reads | All three plans agree on explainer first |
-| Q2 | Generation model and route | Decide by experiment (section 10). Candidates: Runway Gen-4 Image for reference stills; Gen-4 Turbo, Kling 4.0, Seedance 2.5, Wan 3.0, MiniMax H3 or Gemini Omni Flash for image-to-video | verify (2026-11-24) |
+| Q2 | Generation model and route | Decide by experiment (Appendix A.5). Candidates: Runway Gen-4 Image for reference stills; Gen-4 Turbo, Kling 4.0, Seedance 2.5, Wan 3.0, MiniMax H3 or Gemini Omni Flash for image-to-video | verify (2026-11-24) |
 | Q3 | Text-to-speech with word timings | Pilot with a human recording or Polly. Choose between Amazon Polly (cheapest; word marks give start times, ends estimated) and Cartesia Sonic (word start and end times, 44 languages) after a two-sentence test | verify (2026-11-24) |
 | Q4 | Platform, shape, length | YouTube Shorts first, 1080 x 1920, 30 fps, 30 to 45 seconds. Landscape 90 to 150 second explainers later | Shorts accept square or vertical up to 3 minutes; verify (2026-11-24) |
-| Q5 | Budget | About $2.50 cash per 36-second film at the rates below; $5 hard ceiling per film; labour reported separately | Section 3.1 |
+| Q5 | Budget | About $2.50 cash per 36-second film at current rates; $5 hard ceiling per film; labour reported separately | Appendix A.1 |
 | Q6 | Language | Australian English (`en-AU`) first. Beats keep stable IDs so a translation can move cue words | GPT |
 
-### 3.1 Budget worked example (GPT's model, rates verify 2026-11-24)
-
-A 36-second film, six six-second slots: four stills, two short motion shots.
-
-| Line | Estimate |
-|---|---:|
-| 12 Runway Gen-4 Image 1080p stills x 8 credits x $0.01 | $0.96 |
-| 20 seconds of Gen-4 Turbo video x 5 credits x $0.01 | $1.00 |
-| 700 characters x 2 Polly neural requests (audio and marks) at $16 per million | $0.02 |
-| Text generation, local compute and storage allowance | $0.55 |
-| **Expected cash** | **about $2.54** |
-| **Ceiling per film** | **$5.00** |
-
-Grok's range of $3 to $8 covers costlier video models. Labour (producer
-review time) is the real cost and must be measured per film (the `labour`
-record in section 5.1).
-
-### 3.2 Purchase record before the first paid call
-
-The example above is illustrative. Before the first purchase, record for the
-chosen endpoint and model: input and output limits, orderable clip lengths,
-billing unit and rounding, currency, the maximum units per attempt, and the
-primary source URL with the date checked. For each motion slot, show the
-ordered duration, the usable trim or approved still hold, and the maximum
-spend including its permitted retake. If the verified offer cannot fill the
-cut within the cap, use the approved drawing.
+Budget and the purchase record for paid generation are in Appendix A.1 (deferred).
 
 ## 4. Workflow and approvals
 
@@ -297,16 +277,7 @@ a changed spoken line rebuilds its audio, captions, affected cuts, mix and
 master. Outputs are written to a temporary file, checked, then renamed into
 place.
 
-**Paid calls.** Reservation decisions for a film are serialised under one
-lock shared by every worker and rerun. Under that lock, settled charges plus
-outstanding maximum charges plus the new maximum are checked against the cap,
-and the attempt key and reservation are written durably before submission.
-A returned job id is persisted at once and polled on resume. If a submission
-may have succeeded but no id was recorded, the reservation stays open: the
-attempt is reconciled by its key, replayed only if the adapter has verified
-the provider's de-duplication for that window, and otherwise marked
-unresolved until billing or job evidence settles it. A creative retake gets
-its own key and reservation.
+See Appendix A.2 for paid-call bookkeeping (deferred with generation).
 
 ## 6. Stages
 
@@ -317,7 +288,6 @@ its own key and reservation.
 | Shot list | Per beat: what is different on screen at the end, camera side, focal subject, cue, must-see, may-hide | Shots that merely illustrate the same noun are cut; tighten the script instead | Every line maps to a shot or an intentional hold; adjacent screen direction checked |
 | Storyboard | Shot to scene record (section 7), render sketch and diagnostics | Two repair rounds, then manual blocking | Required action identifiable at phone size with captions covered; hard diagnostics pass |
 | Animatic | Approved boards cut to the narration timings | Re-block shots that don't read in sequence | Producer approves the sequence |
-| Generation | Still from the approved board (route from section 10), downloaded and logged with a complete provenance record; motion only from approved stills, against the shot's motion contract | Bounded backoff on rate limits; one creative retake per shot; fall back to the drawn still. An asset with incomplete provenance (terms, source licence, disclosure flag) is not eligible for the edit | Must-see items present; a take is usable only if the whole interval keeps the locked contacts and avoids the forbidden changes, not just a good final frame |
 | Captions | Words grouped into phrases from the timings; WebVTT; optional burn-in | Reflow when a line changes | Two lines max, about 17 characters per second, inside the safe area |
 | Music | Start with silence; one owned or licensed bed, ducked under speech | Mute if it fights consonants or rights are unclear | Cue words audible without reading on a phone speaker |
 | Assembly | Integer frame timeline compiled to FFmpeg; H.264 and AAC in MP4 | Missing media stops with the shot id; never silently loop a short take; reversed or empty intervals rejected | Correct size and fps, duration within one frame, cut boundaries match the approved edit (cue sample rounded to the nearest frame, then the editorial offset applied), -16 LUFS integrated, peak at or below -1 dBTP |
@@ -480,6 +450,16 @@ The sketch must show these choices, or the animatic cannot be judged:
   the in-between frames for the animatic so moves are judged in time, not
   imagined. Each move records the visible result that motivates it, in the
   shot's `motion` contract.
+- **Parallax from layered cutouts (phase B's camera movement).** Instead of
+  rendering 3D camera paths, the renderer exports each board as separate
+  cutout layers by depth: background, midground set, each figure, foreground
+  props. Assembly translates and scales each layer at a rate set by its
+  depth, so near layers move more than far ones, which reads as a real
+  camera drift or push-in at almost no cost. Rules: layer gaps (what was
+  hidden behind a cutout) are filled by drawing the full background, not
+  just its visible part; moves stay small enough that no cutout edge or gap
+  shows; layer depths come from the scene record, so parallax is consistent
+  with the board's perspective. Full 3D camera paths stay for later.
 - **A reveal is not an enlargement.** Projection divides by depth, so a
   camera moving sideways changes what is hidden; scaling a still does not.
   A held still allows only a crop inside its bounds, previewed exactly,
@@ -564,12 +544,7 @@ How it is used:
   reference for palette, edge treatment and texture. Every later board and
   plate is reviewed against these images, judged by local value relationships
   (does the head separate from the rail?) rather than a global darkness target.
-- **Mixed-media seams.** Each replacement plate is played between its
-  neighbours with captions on. If the switch from drawing to generated image,
-  or a change of light, reads as a change of place or time, match it
-  locally, motivate the break in the cut, or use the approved drawing.
-  Intentional mood changes are judged against the dramatic beat and recorded
-  as a named key or palette change, never by quietly editing a prompt.
+
 
 ## 7b. Character sheets: from mannequin to sketched character
 
@@ -585,17 +560,29 @@ model sheet does for a storyboard artist.
 | Clothing as forms | Garments attached to the body's own forms: a coat is a loft around the torso and upper legs that hangs below the pelvis; sleeves wrap the arm segments; a skirt flares from the pelvis; a hat is a simple solid on the head. They move with the pose because they are built on the same joints |
 | Value | Which garments are dark, mid or light, so two characters separate in the value pass and the main character holds the strongest contrast |
 | Signature props | Objects the character always carries or uses |
-| Face | Default: the head oval with face-direction lines, as agreed. Optional: two or three simple marks (brow line, eye line, mouth) for expression in close-ups only |
+| Hands | Hand style for the character, with fingers, drawn the same way every time; the three mannequin hand types (open, fist, V) become finger poses |
+| Hair | The character's actual hairstyle (spiky, long, cropped, tied back), drawn as a consistent shape language |
+| Face | Simple features (brow, eyes, nose, mouth) in a fixed style, built on the head oval and its face-direction lines |
+| Hatching | Whether and how the character is shaded with hatching, following the style profile |
 | Turnaround | Front, three-quarter, side and back renders from the mannequin with the sheet applied, plus one action pose; stored by hash as the visual reference |
 
 Rules:
 
 - The sheet is approved with the story (approval 1), alongside the style
   profile; the line weight and detail of the overlay follow the profile.
-- Overlays stay simple and in the sketch style: silhouette shapes and a few
-  fold lines, never rendered detail. The agreed mannequin conventions
-  (no fingers, no spiky hair, no hatching, clothed form, draped bust) still
-  hold; hair is one mass, not strands.
+- **Who draws what (human decision, 2026-11-24).** Code draws the character
+  layer's silhouette, clothing and hair shape: these are geometry and stay
+  deterministic. Fingers and faces are the hard part: code-drawn hands and
+  faces tend to look stiff. Code attempts them first, on the turnaround and
+  three or four story poses, and the human decides from those renders
+  whether code keeps them or an image model redraws hands and faces over the
+  board guided by the turnaround (which would bring forward part of phase E).
+- **Two layers, two rule sets.** The mannequin is the construction layer:
+  no fingers, no spiky hair, no hatching, clothed form. The character layer
+  drawn from the sheet adds fingers, the character's real hairstyle (spiky
+  included), facial features and hatching, and must render them the same way
+  in every shot. Consistency is the rule for characters, not omission.
+- The character layer stays in the sketch style set by the style profile.
 - Every figure in a scene record refers to a character sheet; the story's
   character list links each character to its sheet.
 - Recognisability test: in a contact sheet of thumbnails, a fresh viewer
@@ -616,9 +603,10 @@ Rules:
 | 7 | Environment presets and one key light with floor shadows | Places and mood | A reverse angle keeps the door and light direction |
 | 8 | Start and end poses with locked contacts, for motion planning | Guide image-to-video and catch foot slide | Interpolation that breaks a locked contact fails |
 | 3a | Value pass: two- or three-tone shadow block-in from tonal key and light motivation | Light versus dark is the main mood control and must be visible in boards (section 7a.3) | High-key, low-key and silhouette versions of one scene read as different moods at phone size |
-| 3b | Camera paths: keyframed position, look-at and field of view with easing; start and end boards with movement arrows; in-between frames for the animatic | Movement is a shot choice and must be judged in time | A dolly-in and a zoom from the same start frame visibly differ in perspective |
+| 3b | Layered cutout export by depth (background drawn complete behind cutouts) and parallax moves in assembly | Cheap, consistent movement for phase B | A drift on the balcony scene shows the rail moving faster than the background with no visible gaps or edges |
+| 3b-later | Camera paths: keyframed position, look-at and field of view with easing; in-between frames rendered from geometry | True viewpoint changes and reveals, after phase B | A dolly-in and a zoom from the same start frame visibly differ in perspective |
 | 3c | Composition overlay and checks: thirds grid, safe area, caption band, headroom and lead room | Framing must be reviewable and partly checkable | Subject placed on a third by a fixed camera lands within tolerance |
-| 6b | Character-sheet overlays: hair mass, headwear, garments as lofts on the body's forms, props, garment values in the value pass; turnaround renders | Viewers follow people, not mannequins | Two characters in one frame are told apart at thumbnail size; a coat hangs and moves with the pose in front, side and back views |
+| 6b | Character-sheet layer over the mannequin: fingers posed from the three hand types, hairstyle, facial features, headwear, garments as lofts on the body's forms, props, hatching per style profile, garment values in the value pass; turnaround renders | Viewers follow people, not mannequins | Two characters in one frame are told apart at thumbnail size; a coat hangs and moves with the pose in front, side and back views |
 | 6a | Set-detail emphasis by focal subject and story detail; optional perspective guides | The viewer may need to find a doorway before a figure; the rail in the peeking shot carries the story | In two versions of one street view, viewers find the designated doorway or figure first; guides never appear on the final board |
 
 Rows 3a to 3c follow row 3 (they need the fixed camera); row 6a goes with
@@ -652,54 +640,17 @@ shapes, night, headlights and wet-ground lighting.
 
 ## 10. The generation route experiment
 
-**Deferred** with generation (section 1.1); kept here for the later phase.
-
-Run a capped manual pilot before building the generation adapter. The
-business question is whether blocking a shot in metres earns its producer
-time, so the main comparison is between whole workflows, not just between
-inputs. (A text prompt derived from a finished scene record already carries
-the director's camera and contact decisions, so comparing it with the board
-only measures the effect of sending the picture.)
-
-- Freeze a set of unseen shot briefs, the previous cut, the must-see criteria
-  and the delivery shape. Include ordinary explanatory inserts as well as
-  hard contacts. Alternate views of one setup count as one case.
-- **Workflow comparison.** One operator writes a direct prompt from the
-  brief. Independently, the same brief is blocked as a scene and submitted as
-  the board plus a scene-derived prompt. Same model, style, size and take
-  allowance. Time both from receiving the brief through review and repair.
-- **Isolating the picture.** Where the workflows differ, submit the
-  scene-derived prompt alone on the disputed shots. Try structural control
-  (contour or depth) only on a demonstrated failure, with a model that
-  supports it.
-- **Judging.** Labels shuffled; first takes judged against the frozen brief
-  in the cut. The approved drawing is scored too, at zero generation spend.
-  Record retries, unrecoverable failures, billed cash and active minutes,
-  including time on rejected shots.
-- **Decision rule, set before running.** The producer sets what one extra
-  usable shot is worth in minutes and cash. Report paired wins, losses and
-  ties with counts. With eight cases one changed verdict moves the rate by
-  12.5 points, so a small or mixed result leaves routing provisional; any
-  proposed default is confirmed on fresh briefs in phase C before automation
-  is funded.
-- **The cheapest intelligible shot.** On an explanatory brief that can be
-  answered graphically, also cut a simple diagram or annotated detail insert
-  into the same slot, time its preparation, and ask a fresh viewer the
-  brief's question after playback. If it explains the answer within budget,
-  that route stays eligible even when both generated workflows pass. It is
-  scored as a choice of shot, outside the paired model comparison.
-- Cost: priced against a separate development cap before running, not a
-  film's budget.
+Deferred with generation; see Appendix A.5.
 
 ## 11. Phased delivery
 
 | Phase | Film | Exit decision |
 |---|---|---|
-| A. First cut, no image model | 15 to 20 seconds built on the ladder pair, whose pose and ladder are identical, so the lesson is about what a viewpoint shows. Establish the hands in the side view and ask the viewer to track the far hand; cut low and leave a beat to look; return to the side for the answer. Use a portrait crop or a detail insert, not full-width panels, so hands and captions stay legible on a phone. Human or Polly voice, captions, hard cuts | Before recording final narration, show the two views silently on a phone to a fresh viewer: they point to the grip in the first view and say what they can still see in the second. If the intended change is unclear, reframe or choose a clearer comparison. In the voiced cut, check the viewer understands the climber held the pose and only the camera moved |
+| A. First micro-story (human decision, 2026-11-24) | 15 to 20 seconds, three or four boards, built from the existing child-peek scene: a child peeks over a balcony rail, sees something, and their face changes. Story to screenplay beats to boards, narrated (human read), captions, one parallax drift, hard cuts. Tests the plumbing and the screenplay-to-beats step together | Shown silently first on a phone: a fresh viewer says what happened. Then voiced: they can retell the moment and say what the child felt |
 | B. First storyboard film | A short story (about 60 to 90 seconds) from story to screenplay beats to boards: static shots with full cinematic intent in one style profile, two figures and simple environments where the story needs them, a value pass for mood, voice, a light music bed, captions | A fresh viewer retells the story's turn and names what the main character wanted; every shot traces to a beat; producer minutes recorded |
 | C. Repeatable storyboard films | Description-to-scene with repair; three new stories, including one in a different style profile | Two of three films within the cash cap and a 45-minute labour target, counting all active producer minutes from brief to private master (rejected takes and manual repair included, provider waiting excluded) from the labour ledger. Report median and maximum by stage and the number of shots needing manual blocking. Swapping out a hard brief counts as a failure |
 | D. Continuity, dialogue and languages | A silent parcel handoff; a short dialogue scene with two voices; a second-language recut | Two viewers identify who gives and who hesitates; roles identifiable across cuts; a fluent reviewer signs off |
-| E. Generation and post (optional, later) | Route experiment (section 10), then one generated still replacing a drawing with a parallel cut, at most one motion shot; post-production beyond the mix if it earns its cost | Private upload under $5 cash; decide whether generated plates beat the drawn film for the cost |
+| E. Generation and post (optional, later) | Route experiment (Appendix A.5), then one generated still replacing a drawing with a parallel cut, at most one motion shot; post-production beyond the mix if it earns its cost | Private upload under $5 cash; decide whether generated plates beat the drawn film for the cost |
 
 **Comprehension counts in phase C.** Before each phase C film, write the
 audience question (for a story: what was the turn, and what did the main
@@ -733,7 +684,7 @@ Q1 to Q6 in section 3. Also:
   plates (can be per film; phase A uses the sketch), and which style profile
   the first films use.
 - Q8. How many active producer minutes one extra accepted shot is worth
-  (needed for the section 10 decision rule).
+  (needed for the Appendix A.5 decision rule).
 - Q9. Which recurring audience question justifies a second film after the
   ladder demonstration.
 
@@ -778,7 +729,7 @@ paid service.
 | Web review UI | Grok | Deferred: a generated HTML review sheet covers phases A to C |
 
 Model and price facts were spot-checked on 2026-11-24 against these pages.
-They remain **verify** until the purchase record in section 3.2 is made:
+They remain **verify** until the purchase record in Appendix A.1 is made:
 
 - Runway API pricing: https://docs.dev.runwayml.com/guides/pricing/
 - Amazon Polly pricing: https://aws.amazon.com/polly/pricing/
@@ -797,7 +748,8 @@ They remain **verify** until the purchase record in section 3.2 is made:
 | Initial plan | Draft 1 |
 | Competing plans | Done: GPT and Grok |
 | Synthesis | Draft 2 |
-| Refinement rounds (4 to 5) | Round 1 (Copilot, GPT, human notes): draft 3. Round 2 (Copilot, GPT): draft 4. Human scope decision: draft 5 |
+| Refinement rounds | Round 1 (Copilot, GPT, human notes): draft 3. Round 2 (Copilot, GPT): draft 4. Human scope decisions: draft 5. **Round 3 is the last** (human decision): it reviews only the storyboard film, not Appendix A |
+| Build | Starts now, in parallel with round 3 (human decision): golden tests, schemas and the phase A micro-story first |
 | Convert to beads | Updated to draft 5; generation beads deferred (`deferred` label, lowest priority) |
 | Polish beads | One pass after each update |
 | Swarm | Not planned at this size |
@@ -853,3 +805,111 @@ apply cleanly.
 | H3 | Human | The first product is a storyboard film: static boards, voice and a light music bed; generation, the route experiment and post-production beyond the mix are deferred | agree | 1.1, 2, 4, 10, 11 |
 | H4 | Human | Front end goes from story to screenplay with intended beats | agree | 4, 5.1, 6 |
 | H5 | Human | Character sheets turn posed mannequins into recognisable sketched characters | agree | 5.1, 7b, roadmap 6b |
+| H6 | Human | Characters are drawn consistently with fingers, real hairstyles (spiky included), features and hatching; only the mannequin omits them | agree | 7b, roadmap 6b; corrects draft 5's rule that characters inherit the mannequin restrictions |
+| H7 | Claude, accepted by human | Code draws character silhouette, clothing and hair shape; fingers and faces decided after code-drawn attempts | agree | 7b |
+| H8 | Claude, accepted by human | Deferred material moved to Appendix A; round 3 is the last and reviews only the storyboard film | agree | Appendix A, 16 |
+| H9 | Claude, accepted by human | Build starts now, in parallel with round 3 | agree | 16 |
+| H10 | Claude, accepted by human | Phase A becomes a micro-story from the child-peek scene | agree | 11 |
+| H11 | Human | Movement by parallax: translate and scale cutout layers by depth, instead of 3D camera paths, for phase B | agree | 1.1, 7a.3, roadmap 3b |
+
+## Appendix A. Deferred material (phase E: generation and post)
+
+Kept for the later phase. Not reviewed in refinement rounds and not built until the storyboard film works (section 1.1).
+
+### A.1 Budget and purchase record
+
+Budget worked example (GPT's model, rates verify 2026-11-24)
+
+A 36-second film, six six-second slots: four stills, two short motion shots.
+
+| Line | Estimate |
+|---|---:|
+| 12 Runway Gen-4 Image 1080p stills x 8 credits x $0.01 | $0.96 |
+| 20 seconds of Gen-4 Turbo video x 5 credits x $0.01 | $1.00 |
+| 700 characters x 2 Polly neural requests (audio and marks) at $16 per million | $0.02 |
+| Text generation, local compute and storage allowance | $0.55 |
+| **Expected cash** | **about $2.54** |
+| **Ceiling per film** | **$5.00** |
+
+Grok's range of $3 to $8 covers costlier video models. Labour (producer
+review time) is the real cost and must be measured per film (the `labour`
+record in section 5.1).
+
+**Purchase record before the first paid call**
+
+The example above is illustrative. Before the first purchase, record for the
+chosen endpoint and model: input and output limits, orderable clip lengths,
+billing unit and rounding, currency, the maximum units per attempt, and the
+primary source URL with the date checked. For each motion slot, show the
+ordered duration, the usable trim or approved still hold, and the maximum
+spend including its permitted retake. If the verified offer cannot fill the
+cut within the cap, use the approved drawing.
+
+### A.2 Paid-call bookkeeping
+
+**Paid calls.** Reservation decisions for a film are serialised under one
+lock shared by every worker and rerun. Under that lock, settled charges plus
+outstanding maximum charges plus the new maximum are checked against the cap,
+and the attempt key and reservation are written durably before submission.
+A returned job id is persisted at once and polled on resume. If a submission
+may have succeeded but no id was recorded, the reservation stays open: the
+attempt is reconciled by its key, replayed only if the adapter has verified
+the provider's de-duplication for that window, and otherwise marked
+unresolved until billing or job evidence settles it. A creative retake gets
+its own key and reservation.
+
+### A.3 Generation stage
+
+| Stage | Method | Failure handling | Acceptance |
+|---|---|---|---|
+| Generation | Still from the approved board (route from Appendix A.5), downloaded and logged with a complete provenance record; motion only from approved stills, against the shot's motion contract | Bounded backoff on rate limits; one creative retake per shot; fall back to the drawn still. An asset with incomplete provenance (terms, source licence, disclosure flag) is not eligible for the edit | Must-see items present; a take is usable only if the whole interval keeps the locked contacts and avoids the forbidden changes, not just a good final frame |
+
+### A.4 Mixed-media seams
+
+- **Mixed-media seams.** Each replacement plate is played between its
+  neighbours with captions on. If the switch from drawing to generated image,
+  or a change of light, reads as a change of place or time, match it
+  locally, motivate the break in the cut, or use the approved drawing.
+  Intentional mood changes are judged against the dramatic beat and recorded
+  as a named key or palette change, never by quietly editing a prompt.
+
+### A.5 The generation route experiment
+
+**Deferred** with generation (section 1.1); kept here for the later phase.
+
+Run a capped manual pilot before building the generation adapter. The
+business question is whether blocking a shot in metres earns its producer
+time, so the main comparison is between whole workflows, not just between
+inputs. (A text prompt derived from a finished scene record already carries
+the director's camera and contact decisions, so comparing it with the board
+only measures the effect of sending the picture.)
+
+- Freeze a set of unseen shot briefs, the previous cut, the must-see criteria
+  and the delivery shape. Include ordinary explanatory inserts as well as
+  hard contacts. Alternate views of one setup count as one case.
+- **Workflow comparison.** One operator writes a direct prompt from the
+  brief. Independently, the same brief is blocked as a scene and submitted as
+  the board plus a scene-derived prompt. Same model, style, size and take
+  allowance. Time both from receiving the brief through review and repair.
+- **Isolating the picture.** Where the workflows differ, submit the
+  scene-derived prompt alone on the disputed shots. Try structural control
+  (contour or depth) only on a demonstrated failure, with a model that
+  supports it.
+- **Judging.** Labels shuffled; first takes judged against the frozen brief
+  in the cut. The approved drawing is scored too, at zero generation spend.
+  Record retries, unrecoverable failures, billed cash and active minutes,
+  including time on rejected shots.
+- **Decision rule, set before running.** The producer sets what one extra
+  usable shot is worth in minutes and cash. Report paired wins, losses and
+  ties with counts. With eight cases one changed verdict moves the rate by
+  12.5 points, so a small or mixed result leaves routing provisional; any
+  proposed default is confirmed on fresh briefs in phase C before automation
+  is funded.
+- **The cheapest intelligible shot.** On an explanatory brief that can be
+  answered graphically, also cut a simple diagram or annotated detail insert
+  into the same slot, time its preparation, and ask a fresh viewer the
+  brief's question after playback. If it explains the answer within budget,
+  that route stays eligible even when both generated workflows pass. It is
+  scored as a choice of shot, outside the paired model comparison.
+- Cost: priced against a separate development cap before running, not a
+  film's budget.
