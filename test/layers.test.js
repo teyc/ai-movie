@@ -146,19 +146,17 @@ test('invalid JSON is reported, not thrown', (t) => {
   assert.match(L.validateManifestFile(bad).errors[0], /^\(root\): not valid JSON/);
 });
 
-test('a far layer moving more than a near one fails (inverted parallax)', () => {
+test('rate order is left to the compiler (a tracking shot validates)', () => {
+  // The near group held still while the wall drifts: valid when the camera
+  // follows the subject. The validator does not judge rate order or direction.
   const m = fixture();
-  m.move.to.wall.t = [-9, 0];
-  const e = check(m);
-  assert.deepStrictEqual(paths(e), ['move.to.rail']);
-  assert.match(e[0], /moves less than "wall", which is farther \(2\.55 m against 1\.7 m\)/);
+  m.move.to = { wall: { t: [-6, 0], s: 1 } };
+  assert.deepStrictEqual(check(m), []);
 });
 
-test('a push-in must rescale near layers at least as much as far ones', () => {
+test('a push-in interpolates scale', () => {
   const m = fixture();
-  m.move.to.wall.s = 1.06;
-  m.move.to.rail.s = 1.03;
-  assert.deepStrictEqual(paths(check(m)), ['move.to.rail']);
+  m.move.to.wall.s = 1.03;
   m.move.to.rail.s = 1.08;
   assert.deepStrictEqual(check(m), []);
   assert.deepStrictEqual(L.transformAt(m.move, 'rail', 0.5), { t: [-3.6, 0], s: 1.04 });
@@ -240,4 +238,5 @@ test('easings run 0 to 1 and the move interpolates per group', () => {
   assert.deepStrictEqual(L.transformAt(mv, 'wall', 1), { t: [-4.8, 0], s: 1 });
   assert.deepStrictEqual(L.transformAt(mv, 'unnamed', 1), { t: [0, 0], s: 1 });
   assert.throws(() => L.ease('bounce', 0.5), /unknown easing/);
+  assert.deepStrictEqual(fixture().layers.map(L.groupOf), ['wall', 'rail', 'rail']);
 });

@@ -166,7 +166,7 @@ compiler. The fixture is `test/fixtures/layers/manifest.json`; validate with
 | `layers[].depth` | Camera distance in metres of the nearest point the layer shows, taken from the scene record (true geometry, not the renderer's depth `bias`). It may not increase down the list. A group's depth is its nearest layer's |
 | `layers[].origin` | `[x, y]` in canvas units: the point the layer scales about |
 | `layers[].group` | Layers that touch (a hand on a rail) share one group and so one transform, so a grip or a foot can't slide. A layer without a group is its own group, named by its `id`. Layers in a group must have the same origin, and no other layer's `id` may equal a group name |
-| `move` | Optional; without it the board is held still. `from` and `to` map group names to `{t: [dx, dy], s}`. A group not named keeps the identity (`t: [0, 0]`, `s: 1`). `s` must be above 0. `easing` is one of `linear`, `ease-in` (u²), `ease-out` (1 − (1 − u)²), `ease-in-out` (3u² − 2u³); optional `easings` maps a group to its own. The transforms are authoritative: depth only checks them, and a nearer group must translate and rescale at least as much as any farther one |
+| `move` | Optional; without it the board is held still. `from` and `to` map group names to `{t: [dx, dy], s}`. A group not named keeps the identity (`t: [0, 0]`, `s: 1`). `s` must be above 0. `easing` is one of `linear`, `ease-in` (u²), `ease-out` (1 − (1 − u)²), `ease-in-out` (3u² − 2u³); optional `easings` maps a group to its own. The transforms are authoritative |
 | `fixed` | Items fixed in delivery space, not moved: `paper` (at most one), `frame-marks` (each with `art` and `digest`, drawn at frame size) and `caption` (a `box` `[x, y, w, h]` inside the frame). `stack` is `under` or `over` the layers; paper is always under |
 
 A point `p` of a layer's art lands at `origin + s · (p − origin) + t` in
@@ -178,8 +178,13 @@ the timed voice. `t` and `s` are interpolated by the eased `u`
 
 The manifest's own digest is sha256 of its file bytes. The edit pins it so
 preview and assembly use the same split. Unknown fields are rejected so typos
-fail. Checking that no cutout edge, gap or frame edge shows during the move
-belongs to the compiler (am-e-asm-qgh.5), not the validator.
+fail. The validator does not check that near layers move more than far
+ones, or in the same direction: a manifest holds finished transforms, not
+the camera move behind them, so a tracking shot (near group held, background
+drifting) or per-group easing can't be judged from it. Nor does it check that
+`board`, paper and frame-mark art are drawn at frame size. Rate order through
+the whole move, and that no cutout edge, gap or frame edge shows, belong to
+the compiler (am-e-asm-qgh.5).
 
 ## Known limits
 
