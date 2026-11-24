@@ -181,9 +181,32 @@
           "licence": "CC BY (per its page)",
           "attribution": "\"Buzzing, Electric Lamp, A.wav\" by InspectorJ (www.jshaw.co.uk) of Freesound.org",
           "status": "candidate; confirm licence and listen before downloading"
+        },
+        {
+          "for": "ambience",
+          "title": "Suburban evening birdsong, distant traffic (Southern England, June 2016)",
+          "url": "https://freesound.org/s/377152",
+          "licence": "CC0 (per its page)",
+          "attribution": null,
+          "status": "candidate; English birds (blackbird, robin) will sound wrong to Australian ears if the film reads as Brisbane"
+        },
+        {
+          "for": "ambience",
+          "title": "suburb evening NL 927PM 220518_0359 (recorded on a 20 m high balcony between buildings)",
+          "author": "klankbeeld",
+          "url": "https://freesound.org/people/klankbeeld/sounds/635799",
+          "licence": "CC BY 4.0 (per its page)",
+          "attribution": "klankbeeld, freesound.org (https://freesound.org/people/klankbeeld/); the author asks for this credit form",
+          "status": "candidate; the balcony perspective matches sh1 to sh5, but the birds are Dutch (jackdaws)"
+        },
+        {
+          "for": "fx3/fx4/fx5/fx6",
+          "title": "(none found)",
+          "status": "No petrol scooter recording with a confirmed CC0 or CC BY licence turned up in search. Best option: record one on a phone (pass-by, pull-up and idle, brake, engine off), which also covers fx3 by processing for distance"
         }
       ],
-      "searchedOn": "2026-11-24"
+      "searchedOn": "2026-11-24",
+      "recommendation": "Record two minutes from a Brisbane balcony at dusk (ambience and room tone in one take, owned, with the right birds) and a scooter pull-up on a phone. Use the CC BY or CC0 candidates for anything that can't be recorded."
     }
   }
 }
