@@ -2,3 +2,4 @@ resource/pose/*.svg
 .DS_Store
 node_modules/
 test/review/
+examples/**/*.svg

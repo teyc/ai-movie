@@ -61,6 +61,8 @@ Units are metres and degrees. Axes: `x` is the figure's left, `y` is up,
 | `profile` | A name from `profiles.json`, or an inline profile object |
 | `camera.pos`, `camera.at` | Camera position and the point it looks at. The figure is scaled to fit the frame, so distance sets perspective, not size |
 | `camera.zoom` | Above 1 crops in |
+| `camera.verticalFovDeg` | Fixed camera: true perspective with this vertical field of view, centred on `at`. Without it the figure is auto-fitted to the frame |
+| `frame` | `{w, h}` in drawing units; default 320 x 200. Portrait 9:16 is `{w: 180, h: 320}` |
 | `camera.rollDeg` | Tilts the camera |
 | `stand` | Shifts the figure so its lowest point rests on the ground. Do not combine with reach targets |
 | `ground` | Draws a short ground stroke under feet, hands or knees that touch the floor |
@@ -126,6 +128,7 @@ scales joint ranges.
 - Depth order is by each form's average distance, which can mis-sort long
   props and overlapping limbs.
 - Joint ranges, proportions and muscle shapes are estimates, not measured data.
-- No environment or lighting.
+- No environment or lighting. Very large boxes (walls) can sort in front of nearer forms; give them a positive `bias` until the visibility check lands.
+- The fixed camera does not yet clip forms crossing the near plane; keep the camera clear of geometry.
 - The source is prototype code with terse names. It is formatted but not yet
   refactored.
