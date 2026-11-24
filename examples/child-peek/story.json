@@ -1,0 +1,52 @@
+{
+  "kind": "story",
+  "version": 1,
+  "id": "child-peek",
+  "payload": {
+    "logline": "A small girl on a balcony waits every evening for her dad's car, and the headlights that finally turn into the street bring something even better.",
+    "change": "Mia goes from waiting to celebrating, but not for the reason she expected.",
+    "structure": {
+      "name": "kishotenketsu",
+      "why": "Four parts with a twist and no villain fit a 15 to 20 second film and a gentle joke. Considered setup-and-punchline (too thin on character) and man in a hole (too long for 20 seconds)."
+    },
+    "structureBeats": [
+      { "name": "ki", "summary": "Evening; Mia on tiptoe at the balcony rail, watching the street." },
+      { "name": "sho", "summary": "She knows what she is waiting for: Dad's car." },
+      { "name": "ten", "summary": "Headlights turn the corner. It is not Dad. It is a pizza scooter." },
+      { "name": "ketsu", "summary": "She celebrates anyway: even better." }
+    ],
+    "characters": [
+      {
+        "id": "mia",
+        "profile": "child",
+        "wants": "To see Dad come home.",
+        "obstacle": "None; the twist supplies the turn.",
+        "visibleTrait": "Always on tiptoe, chin barely over the rail.",
+        "characterSheet": null
+      }
+    ],
+    "setting": {
+      "location": "Third-floor apartment balcony over a quiet residential street",
+      "timeOfDay": "blue hour, just after the streetlights come on",
+      "light": "Warm lamp light from the window behind Mia; cool blue street; one streetlight on the corner",
+      "details": ["Balcony rail with upright balusters", "A street corner with a single streetlight"]
+    },
+    "tone": {
+      "register": "warm, quiet, gently funny",
+      "humour": "Reversal of expectation, landed by an understated last line"
+    },
+    "styleProfile": {
+      "id": "quiet-evening-storybook",
+      "framing": "Balanced, generous negative space; child's eye height for her shots",
+      "angles": "Low from the street for the establishing shot, eye level at child height, high-angle point of view",
+      "lens": "Normal; long for the point of view down the street",
+      "movement": "Holds with gentle parallax drifts and push-ins only",
+      "key": "Mid-low key; warm practical light against cool blue",
+      "editing": "Unhurried; the longest hold on the final image"
+    },
+    "audience": "General, all ages; short vertical video",
+    "targetSeconds": 18,
+    "delivery": { "width": 1080, "height": 1920, "fps": 30 },
+    "synopsis": "Six o'clock, blue hour. Mia, on tiptoe at her balcony rail, keeps watch over the street the way she does every evening, waiting for the sound of Dad's car. Headlights swing round the corner and she leans out, certain. It isn't Dad: it's a pizza scooter, turning towards her building. Mia throws both arms in the air. Even better."
+  }
+}

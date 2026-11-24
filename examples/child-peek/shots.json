@@ -1,0 +1,83 @@
+{
+  "kind": "shots",
+  "version": 1,
+  "id": "child-peek",
+  "payload": {
+    "screenplay": "child-peek",
+    "styleProfile": "quiet-evening-storybook",
+    "axes": [{ "id": "balcony-street", "between": ["balcony", "street corner"], "note": "The corner is screen-left from the balcony side throughout" }],
+    "shots": [
+      {
+        "id": "sh1", "beat": "b1", "anchor": { "kind": "speech", "cue": "watch", "offsetFrames": 0 }, "seconds": 4.5,
+        "size": "wide", "angle": "low", "lens": "normal",
+        "composition": { "rule": "thirds", "subject": "upper-right third", "headroom": "generous sky and wall above" },
+        "layers": { "fg": "streetlight post, left edge", "mg": "balcony rail with Mia", "bg": "lit window and building wall" },
+        "key": "mid-low", "motivation": "Warm window behind Mia; cool blue hour; streetlight flickering on",
+        "move": { "kind": "parallax", "type": "push-in", "amount": 0.05, "seconds": 4.5 },
+        "continuity": { "axis": "balcony-street", "cameraSide": "street", "looks": [{ "who": "mia", "at": "street corner, screen-left" }] },
+        "mustSee": ["a small figure at the rail", "the lit window behind her"],
+        "mayHide": ["Mia's hands"],
+        "startFrom": { "pose": "child-peek", "note": "reverse the camera: from the street looking up" },
+        "reason": "Make her small against the building so the waiting reads as patient and a little lonely."
+      },
+      {
+        "id": "sh2", "beat": "b2", "anchor": { "kind": "speech", "cue": "car", "offsetFrames": -10 }, "seconds": 4,
+        "size": "medium close-up", "angle": "eye level at child height", "lens": "normal",
+        "composition": { "rule": "thirds", "subject": "right third", "leadRoom": "screen-left, towards the corner" },
+        "layers": { "fg": "balusters, out of focus in style (lighter line)", "mg": "Mia leaning, hands on the rail", "bg": "dim street, corner glow" },
+        "key": "mid-low", "motivation": "Warm rim from the window behind; cool fill from the street",
+        "move": { "kind": "parallax", "type": "drift", "direction": "left", "amount": 0.04, "seconds": 4, "note": "balusters slide faster than Mia" },
+        "continuity": { "axis": "balcony-street", "cameraSide": "street", "looks": [{ "who": "mia", "at": "corner, screen-left" }] },
+        "mustSee": ["Mia leaning towards screen-left", "both hands on the rail"],
+        "mayHide": ["her legs"],
+        "startFrom": { "pose": "child-peek" },
+        "reason": "Bring us to her height and her patience; the drifting bars make the frame feel like her lookout."
+      },
+      {
+        "id": "sh3", "beat": "b3", "anchor": { "kind": "picture", "beat": "headlights turn the corner", "frame": null }, "seconds": 2,
+        "size": "wide", "angle": "high, point of view", "lens": "long",
+        "composition": { "rule": "thirds", "subject": "headlight glow at the corner, lower-left third" },
+        "layers": { "fg": "edge of the rail and Mia's raised shoulder, right", "mg": "street", "bg": "corner and streetlight" },
+        "key": "low", "motivation": "Headlight beam and the streetlight cutting the blue",
+        "move": { "kind": "hold" },
+        "continuity": { "axis": "balcony-street", "cameraSide": "balcony", "looks": [{ "who": "mia", "at": "corner" }], "note": "Point of view: corner stays screen-left" },
+        "mustSee": ["headlights rounding the corner", "Mia rising on her toes at the frame edge"],
+        "mayHide": ["the vehicle itself"],
+        "startFrom": { "recipe": "high-angle point of view" },
+        "reason": "Her point of view at the moment of hope; hiding the vehicle keeps the twist for the next cut."
+      },
+      {
+        "id": "sh4", "beat": "b4", "anchor": { "kind": "speech", "cue": "notdad", "offsetFrames": -8 }, "seconds": 2.5,
+        "size": "medium wide", "angle": "high", "lens": "long",
+        "composition": { "rule": "centred", "subject": "scooter under the streetlight" },
+        "layers": { "fg": "none", "mg": "scooter and rider with pizza box", "bg": "kerb and building entrance" },
+        "key": "low", "motivation": "Pool of streetlight on the scooter",
+        "move": { "kind": "hold" },
+        "continuity": { "axis": "balcony-street", "cameraSide": "balcony", "looks": [] },
+        "mustSee": ["a pizza box, clearly square, on the back of the scooter"],
+        "mayHide": ["the rider's face"],
+        "startFrom": { "note": "new props needed: scooter, box; or an authored diagram insert if props are not ready" },
+        "reason": "The reveal must read instantly: one object, centred, in a pool of light."
+      },
+      {
+        "id": "sh5", "beat": "b5", "anchor": { "kind": "speech", "cue": "better", "offsetFrames": -15 }, "seconds": 4.5,
+        "size": "medium", "angle": "slightly low", "lens": "normal",
+        "composition": { "rule": "centred", "subject": "Mia, arms up, framed by the lit window" },
+        "layers": { "fg": "top of the rail", "mg": "Mia, both arms thrown up", "bg": "warm window" },
+        "key": "mid", "motivation": "The window behind her glows warmer: the warmest frame of the film",
+        "move": { "kind": "parallax", "type": "push-in", "amount": 0.06, "seconds": 4.5 },
+        "continuity": { "axis": "balcony-street", "cameraSide": "street", "looks": [{ "who": "mia", "at": "down to the scooter, screen-left and below" }] },
+        "mustSee": ["both arms up", "the window behind her"],
+        "mayHide": ["the street"],
+        "startFrom": { "pose": "child-peek", "note": "arms raised above the rail; still on tiptoe" },
+        "reason": "The punchline is her body; centring her in the window rhymes with the first shot and gives the longest, warmest hold."
+      }
+    ],
+    "totalSeconds": 17.5,
+    "notes": [
+      "Cut on the cue word minus a few frames, so the picture leads the line.",
+      "sh4 needs two new props (scooter, pizza box); until then use a simple authored insert.",
+      "Axis kept: the corner is screen-left from both sides because sh3 and sh4 are true point-of-view shots from the balcony."
+    ]
+  }
+}

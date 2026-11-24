@@ -36,6 +36,8 @@ video model is involved. See `README.md` for the stage table and
 | `resource/pose/` | Reference scene records (`.json`) with renders (`.png`) |
 | `docs/planning/` | Plan documents |
 | `.beads/` | Task tracking (beads). `issues.jsonl` is committed; the database is not |
+| `skills/` | Pipeline skills (symlink to `.claude/skills` for Claude Code), used in order: `story-writer` → `screenplay` → `script-doctor` → `shot-list` |
+| `examples/` | Worked examples of the pipeline; `examples/child-peek/` is the phase A micro-story |
 
 ## Tech stack
 
