@@ -820,7 +820,7 @@ They remain **verify** until the purchase record in Appendix A.1 is made:
 | Refinement rounds | Done. Round 1: draft 3. Round 2: draft 4. Human scope decisions: drafts 5 and 6. Round 3 (final): draft 7 |
 | Build | Starts now, in parallel with round 3 (human decision): golden tests, schemas and the phase A micro-story first |
 | Convert to beads | Updated to draft 5; generation beads deferred (`deferred` label, lowest priority) |
-| Polish beads | One pass after each update |
+| Polish beads | Lint after each plan update. Full polish pass 1 (2026-11-24): every open bead rewritten to stand alone (update notes folded in), stale links to deferred generation removed, untracked work filed and closed with proof, new beads for the Dad's-car plant (am-mcd.15) and a sound library (am-e-voice-fi2.7). Next: a fresh-eyes review by another model |
 | Swarm | Not planned at this size |
 
 ## 17. Refinement log
