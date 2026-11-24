@@ -87,14 +87,16 @@ These came from review of rendered frames. Do not undo them without asking.
 2. Run the checks.
 3. Update bead status (`br close <id> --reason "..."`).
 4. `br sync --flush-only`, then stage `.beads/` with the code.
-5. Commit. There is no remote yet; when one exists, pull with rebase and push.
+5. Commit, then `git pull --rebase` and `git push`. Work is not finished until it is pushed to
+   `origin` (github.com/teyc/ai-movie). If you cannot push (no credentials in a sandbox), say so
+   and leave the push to the human.
 
 ## Tools
 
 - **br** (beads_rust): issue tracker. Start with `br ready --json`; claim with
   `br update <id> --claim --actor "$AGENT_NAME"`; finish with
   `br close <id> --reason "Completed: <proof>"`. Set `RUST_LOG=error`.
-- **bv** (beads viewer): not installed yet. When it is, use only its
+- **bv** (beads viewer, installed on the human's Mac as `bvr`): use only its
   `--robot-*` flags.
 
 <!-- br-agent-instructions-v1 -->
