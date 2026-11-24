@@ -64,9 +64,12 @@ These came from review of rendered frames. Do not undo them without asking.
   range; a flexibility setting allows acrobatic poses.
 - Every pose states where the figure looks. Only dynamic poses (falls, flips)
   use `"look": "free"`. The neck follows the spinal curve.
-- Hands are one of three types: open, fist, V. Heads are an oval with two
-  curved cross-lines showing face direction. No hair, no fingers, no hatching,
-  no speed lines.
+- Two layers. The **mannequin** (construction layer): hands are one of three
+  types (open, fist, V); heads are an oval with two curved cross-lines showing
+  face direction; no fingers, no spiky hair, no hatching, no speed lines;
+  clothed form. The **character layer**, drawn from a character sheet, adds
+  fingers, the character's real hairstyle (spiky included), facial features
+  and hatching, and must draw them the same way in every shot.
 - Figures are a clothed form: the bust is drape with one horizontal stretch
   line; the female torso is slender; shoulders slope, no large traps.
 - Limbs carry the sketching curves (calf full at the back, straight shin,
