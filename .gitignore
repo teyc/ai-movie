@@ -6,3 +6,4 @@ examples/**/*.svg
 .env
 .env.*
 runs/
+.agent-chat.md
