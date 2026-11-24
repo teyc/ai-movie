@@ -117,6 +117,25 @@ Joint names for `lineOfAction` and prop anchors: `pelvis`, `waist`, `chest`,
 | `ladder` | `base`, `top` centre-line points, `halfWidth`, `rungSpacing` |
 | `railing` | `from`, `to` at floor level, `height`, `balusterSpacing` |
 
+Street props each have their own frame: `at` is a point on the ground (its
+`y` is the ground level, so a street below a balcony works), forward is
+`+z` turned by `yaw` degrees. Fixtures for each are in `test/fixtures/pose/`.
+
+| Type | Fields |
+|---|---|
+| `scooter` | `at`, `yaw`. A step-through delivery scooter, 1.7 m long, seat top 0.80 m: two wheels, deck, seat, leg shield, column and handlebar. `box` (default true) adds a square delivery box on a rear rack; `light: true` adds the headlight, and `beam` its wedge on the road. The rider is the scene's figure: pose it with `ik` to the grips and the deck (see `prop-scooter.json`) |
+| `car` | `at`, `yaw`. A small car, 3.9 m by 1.7 m: body, cabin, four wheels. `headlights: true` adds two lamps; `beam` adds their wedges |
+| `streetlight` | `at`, `yaw`, `height` (default 5 m), `arm` (default 1.4 m, reaching forward), lamp head at the arm's end |
+| `kerb` | `from`, `to` at road level, `height` (default 0.15 m) up to the footpath, `side` (default 1: the footpath is on the right of from→to seen from above; -1 the left). Along `+x`, `side: 1` puts the footpath towards `+z` |
+| `bay` | `at`, `yaw`, `size` `[width, length]` (default `[2.4, 5]`). Painted lines on three sides, open at the front (`+z`, the road side). `count` bays side by side share their dividing lines, with `at` the centre of the row. A lone empty bay reads weakly; a row with parked cars beside the empty one reads by contrast |
+| `lamp` | `at`, `dir`, `r` (default 0.08 m). A light on its own, such as a headlight seen at night: a disc and a ring of ink halo ticks, sized so a far light still reads. `beam` `{length, spreadDeg}` lays a wedge on the ground at `ground` (required with `beam`) |
+
+Wheels keep their tyre width, so they stay readable edge-on. Kerbs and bay
+lines are drawn on the ground plane under everything else. A beam runs from
+its lamp to a pool on the ground and is depth-sorted at the lamp, so forms
+behind the lamp can't cover it. Kerbs, bay lines and beams are clipped where
+they pass behind the camera; a lamp behind the camera is not drawn.
+
 ### Profiles
 
 Multipliers on the adult skeleton: `h` (height), `leg`, `torso`, `arm`,
@@ -194,7 +213,12 @@ the compiler (am-e-asm-qgh.5).
 - Depth order is by each form's average distance, which can mis-sort long
   props and overlapping limbs.
 - Joint ranges, proportions and muscle shapes are estimates, not measured data.
-- No environment or lighting. Very large boxes (walls) can sort in front of nearer forms; give them a positive `bias` until the visibility check lands.
-- The fixed camera does not yet clip forms crossing the near plane; keep the camera clear of geometry.
+- One figure per scene. A scooter in a shot that also shows another figure
+  has no rider.
+- Boxes can't slope, so the car's windscreen is upright and it reads as a
+  small van; the cabin carries a depth bias so it draws over the body.
+- Only the street props above for environment; lighting is limited to lamps.
+- Very large boxes (walls) can sort in front of nearer forms; give them a positive `bias` until the visibility check lands.
+- The fixed camera does not yet clip forms crossing the near plane (ground strokes excepted); keep the camera clear of geometry.
 - The source is prototype code with terse names. It is formatted but not yet
   refactored.

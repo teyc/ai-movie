@@ -1,0 +1,23 @@
+{
+  "name": "One light rounding the corner",
+  "description": "Test fixture for the standalone lamp prop with its beam, from sh3's camera position raised 0.8 m (high, behind Mia, down the street to the corner); at the board's height the near railing hides the corner streetlight (see am-mcd.3). The lamp is about 16 m away, so it must read through its halo ticks and beam, not its size. Street level is y = -6; the corner is at x = -15.",
+  "profile": "child",
+  "frame": { "w": 180, "h": 320 },
+  "camera": { "pos": [0.5, 2.9, -0.35], "at": [-12, -5.6, 6], "verticalFovDeg": 30 },
+  "props": [
+    { "t": "railing", "from": [-1.7, 0, 0.45], "to": [1.7, 0, 0.45], "height": 1.05, "balusterSpacing": 0.16 },
+    { "t": "kerb", "from": [-15, -6, 3], "to": [8, -6, 3], "side": -1 },
+    { "t": "kerb", "from": [-15, -6, 9], "to": [8, -6, 9], "side": 1 },
+    { "t": "kerb", "from": [-15, -6, 3], "to": [-15, -6, -8], "side": 1 },
+    { "t": "kerb", "from": [-15, -6, 9], "to": [-15, -6, 22], "side": -1 },
+    { "t": "streetlight", "at": [-15.5, -6, 9.6], "yaw": 180, "height": 4.2, "arm": 1.2 },
+    { "t": "lamp", "at": [-14.2, -5.03, 6.2], "dir": [1, 0, -0.35], "r": 0.08, "ground": -6, "beam": { "length": 5, "spreadDeg": 26 } }
+  ],
+  "pose": {
+    "root": { "p": [0, 0.7, 0.27], "pitch": 3, "yaw": -15 },
+    "nk": [-5, 0, 0],
+    "ik": { "lWr": [0.15, 1.06, 0.4], "rWr": [-0.15, 1.06, 0.4], "lAn": [0.07, 0.15, 0.27], "rAn": [-0.07, 0.15, 0.27] },
+    "foot": { "l": [0, -0.6, 0.8], "r": [0, -0.6, 0.8] },
+    "look": [-14.2, -5.03, 6.2]
+  }
+}

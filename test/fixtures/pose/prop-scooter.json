@@ -1,0 +1,17 @@
+{
+  "name": "Scooter with rider and box",
+  "description": "Test fixture for the scooter prop: sh4's camera position and direction (high, from the balcony) with a wider lens so the whole scooter fits. Street level is y = -6. The rider is the scene's figure, posed with reach targets to the grips and the deck.",
+  "profile": "adult",
+  "frame": { "w": 180, "h": 320 },
+  "camera": { "pos": [0.1, 0.9, 0.6], "at": [-2.0, -5.4, 7.5], "verticalFovDeg": 26 },
+  "props": [
+    { "t": "scooter", "at": [-2, -6, 7.5], "yaw": 90, "light": true, "beam": { "length": 4, "spreadDeg": 26 } },
+    { "t": "kerb", "from": [-6, -6, 6.4], "to": [3, -6, 6.4], "side": -1 }
+  ],
+  "pose": {
+    "root": { "p": [-2.2, -5.08, 7.5], "yaw": 90, "pitch": 12 },
+    "tho": [10, 0, 0],
+    "ik": { "lWr": [-1.7, -4.98, 7.22], "rWr": [-1.7, -4.98, 7.78], "lAn": [-1.86, -5.58, 7.37], "rAn": [-1.86, -5.58, 7.63] },
+    "look": [6, -4.9, 7.5]
+  }
+}

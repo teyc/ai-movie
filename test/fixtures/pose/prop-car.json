@@ -1,0 +1,16 @@
+{
+  "name": "Car with headlights",
+  "description": "Test fixture for the car prop with headlights and beams: three-quarter front view at standing eye level, a standing adult beside it for scale.",
+  "profile": "adult",
+  "camera": { "pos": [5.5, 1.6, 7.5], "at": [0, 0.7, 0.4], "verticalFovDeg": 34 },
+  "props": [
+    { "t": "car", "at": [0, 0, 0], "yaw": 0, "headlights": true, "beam": { "length": 4, "spreadDeg": 22 } },
+    { "t": "kerb", "from": [-8, 0, -1.3], "to": [8, 0, -1.3], "side": -1 }
+  ],
+  "stand": true,
+  "pose": {
+    "root": { "p": [-2.2, 1, -0.4], "yaw": 30 },
+    "lSh": [0, 8, 0], "lEl": 10, "rSh": [0, 8, 0], "rEl": 10,
+    "look": [5.5, 1.6, 7.5]
+  }
+}

@@ -87,6 +87,30 @@ test('contact sheet frames each have their own clip id; the line-up has none', (
   assert.doesNotMatch(pose.renderLineup({ seed: 11 }), /clipPath/);
 });
 
+test('ground strokes that pass behind the camera are clipped, not projected wildly', () => {
+  const scene = loadScene('test/fixtures/pose', 'prop-street-sh1');
+  // A kerb from far in front of the camera to far behind it (camera at z = 14, looking towards -z).
+  scene.props = [{ t: 'kerb', from: [-1, -6, -20], to: [-1, -6, 40] }];
+  const svg = pose.renderFrame(scene, { seed: 11 }).svg;
+  const nums = [...svg.matchAll(/<path d="([^"]+)"/g)].flatMap((m) => m[1].match(/-?\d+(\.\d+)?/g).map(Number));
+  assert.ok(nums.length > 0);
+  assert.ok(Math.max(...nums.map(Math.abs)) < 5000, 'no coordinate explodes from a point behind the camera');
+  // Entirely behind the camera: nothing drawn for it.
+  scene.props = [{ t: 'kerb', from: [-1, -6, 15], to: [-1, -6, 40] }];
+  const behind = pose.renderFrame(scene, { seed: 11 }).svg;
+  const base = pose.renderFrame({ ...scene, props: [] }, { seed: 11 }).svg;
+  assert.equal(behind.length, base.length);
+});
+
+test('street props expand into primitives and leave other scenes alone', () => {
+  const scene = loadScene('test/fixtures/pose', 'prop-scooter');
+  const svg = pose.renderFrame(scene, { seed: 11 }).svg;
+  const withoutBox = pose.renderFrame({ ...scene, props: [{ ...scene.props[0], box: false }, scene.props[1]] }, { seed: 11 }).svg;
+  assert.ok(withoutBox.length < svg.length, 'box: false drops the delivery box');
+  assert.throws(() => pose.renderFrame({ ...scene, props: [{ t: 'kerb', from: [0, 0, 0] }] }), /kerb: `to` must be \[x, y, z\]/);
+  assert.throws(() => pose.renderFrame({ ...scene, props: [{ t: 'lamp', at: [0, 1, 0], beam: {} }] }), /lamp: a beam needs `ground`/);
+});
+
 test('a changed profile number changes the drawing (the tests can fail)', () => {
   const scene = loadScene('resource/pose', 'standing');
   const before = pose.renderFrame(scene, { seed: 11 }).svg;

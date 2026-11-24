@@ -14,7 +14,7 @@
   },
   "testFrames": {
     "folder": "test/fixtures/pose",
-    "scenes": ["limb-past-frame"]
+    "scenes": ["limb-past-frame", "prop-scooter", "prop-street-sh1", "prop-light-sh3", "prop-car"]
   },
   "sheets": [
     { "name": "sheet", "folder": "resource/pose", "construction": false }

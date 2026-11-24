@@ -1,0 +1,19 @@
+{
+  "name": "Kerb, empty parking bay and streetlight",
+  "description": "Test fixture for the kerb, bay, car and streetlight props, from across the street at 2 m above the road, standing back on the far footpath (a proposed re-aim for sh1: the board's camera, 0.7 m up and tilted at the building, can't see the kerb; see am-mcd.3). Street level is y = -6; the kerb runs along x at z = 3 with the footpath towards the building wall. Two nose-in bays set 0.3 m off the kerb (so the back line does not merge into it), open on the road side: a car in the left one, the right one empty, so its emptiness reads by contrast. A standing adult on the footpath gives scale.",
+  "profile": "adult",
+  "frame": { "w": 180, "h": 320 },
+  "camera": { "pos": [0.5, -4.0, 14], "at": [0.3, -4.4, 3], "verticalFovDeg": 56 },
+  "props": [
+    { "t": "box", "c": [0, -1.3, -0.5], "size": [9, 9.4, 0.2], "bias": 60 },
+    { "t": "kerb", "from": [-12, -6, 3], "to": [12, -6, 3], "side": -1 },
+    { "t": "bay", "at": [0.3, -6, 5.8], "yaw": 0, "size": [2.4, 5], "count": 2 },
+    { "t": "car", "at": [-0.9, -6, 5.9], "yaw": 180 },
+    { "t": "streetlight", "at": [2.3, -6, 2.6], "height": 4.5, "arm": 1.4 }
+  ],
+  "pose": {
+    "root": { "p": [1.6, -5.0, 1.6], "yaw": 20 },
+    "lSh": [0, 8, 0], "lEl": 10, "rSh": [0, 8, 0], "rEl": 10,
+    "look": [0, -4.5, 6]
+  }
+}
