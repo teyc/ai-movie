@@ -1,15 +1,17 @@
 # Plan for ai-movie
 
-Status: **draft 2**, 2026-11-24. A synthesis of three independent plans:
+Status: **draft 3**, 2026-11-24. Draft 2 was a synthesis of three independent
+plans:
 
 - draft 1 (Claude, written with the human during the storyboard sessions),
 - `PLAN_FOR_AI_MOVIE_GPT-6.md` (GPT),
 - `PLAN_FOR_AI_MOVIE_Grok.html` (Grok).
 
-Section 15 records what came from where and what was rejected. Refinement
-rounds (Flywheel step 4) have not happened yet. Facts about outside services
-are marked **verify (2026-11-24)** and must be rechecked before money is
-spent.
+Draft 3 applies refinement round 1 (Copilot and GPT, in
+`refinements/ROUND_1_*.md`). Section 15 records what came from where in the
+synthesis; section 17 rates every refinement change. Facts about outside
+services are marked **verify (2026-11-24)** and must be rechecked, with the
+purchase record in section 3.2, before money is spent.
 
 ## 1. Goal and the core bet
 
@@ -46,6 +48,8 @@ at all.
 | Approvals pin exact content | An approval records the hash of what was seen or heard; changing it reopens the approval | GPT |
 | Models flag, humans approve | Vision or language models may flag problems; they never approve a shot | GPT, Grok |
 | Hand-sketched look | Frames look human-drawn; conventions in `AGENTS.md` | Draft 1 |
+| Every shot is a cinematic choice, stated | Shot size, angle, lens, composition, depth layers, movement, tonal key and light motivation are named in the shot record with a reason, and drawn in the board (section 7a) | Human, round 1 |
+| One consistent style per film | A style profile (symmetrical tableau, colour-field epic, Hong Kong police thriller, black-and-white noir, and so on) bounds every shot choice; breaks need a reason (section 7a.6) | Human, round 1 |
 | Final look is a per-project choice | The sketch itself, or a generated style from the same scene record | GPT and Grok, reconciled |
 
 ## 3. Recommended answers to the open questions
@@ -76,18 +80,35 @@ A 36-second film, six six-second slots: four stills, two short motion shots.
 | **Ceiling per film** | **$5.00** |
 
 Grok's range of $3 to $8 covers costlier video models. Labour (producer
-review time) is the real cost and must be measured per film.
+review time) is the real cost and must be measured per film (the `labour`
+record in section 5.1).
+
+### 3.2 Purchase record before the first paid call
+
+The example above is illustrative. Before the first purchase, record for the
+chosen endpoint and model: input and output limits, orderable clip lengths,
+billing unit and rounding, currency, the maximum units per attempt, and the
+primary source URL with the date checked. For each motion slot, show the
+ordered duration, the usable trim or approved still hold, and the maximum
+spend including its permitted retake. If the verified offer cannot fill the
+cut within the cap, use the approved drawing.
 
 ## 4. Workflow and approvals
 
 1. **Brief**: topic, audience, the one question the film answers, evidence,
    locale, delivery shape, cash cap.
 2. **Script** as beats. Each beat states a claim or change, its spoken and
-   displayed text, cue words with stable IDs, and evidence.
-   **Approval 1: script and pronunciation.**
-3. **Voice**: synthesise or record the narration and get word timings.
-4. **Shot list**: one row per camera setup, tied to a beat and a cue, with
-   must-see and may-hide lists and the shot it cuts from.
+   displayed text, cue words with stable IDs, and evidence. A style profile
+   is chosen for the film (section 7a.6).
+   **Approval 1: script, pronunciation and style profile.**
+3. **Voice**: synthesise or record the narration and get word timings. For a
+   short human read, hand-mark the caption phrase bounds and named cut cues
+   on the actual take, stored as sample offsets with the audio's hash, so a
+   pickup can never silently reuse stale timings.
+4. **Shot list**: one row per appearance in the cut. A return cut reuses a
+   camera setup or plate. Each appearance is tied to a beat and a cue, with
+   an editorial offset from the cue, must-see and may-hide lists, and the
+   shot it cuts from.
 5. **Storyboard**: each shot becomes a scene record and a sketch frame.
 6. **Animatic**: frames cut to the real narration timings, watched as a film.
    **Approval 2: storyboard, judged in sequence, not frame by frame.**
@@ -125,17 +146,34 @@ Every record on disk uses one envelope and is validated on read and write.
 
 | Record | Key fields |
 |---|---|
-| brief | audience, question, evidence, locale, delivery `{width, height, fps}`, cashCapUsd |
+| brief | audience, question, evidence, locale, delivery `{width, height, fps}`, cashCapUsd, style profile id |
+| style profile | framing, angle and lens habits, movement, tonal key and contrast, light, palette, texture, editing rhythm, image aspect ratio (section 7a.6) |
 | beat | spoken, display, cues `[{id, word, occurrence}]`, evidence, purpose |
-| shot | beat, intent, template (reference pose), setup, inCue, mustSee, mayHide, motion, cutFrom |
-| scene v2 | camera, environment, lights, figures, props (below) |
+| shot | beat, intent, template (reference pose), setup, inCue, cueOffsetFrames (signed, default 0), mustSee, mayHide, motion, cutFrom |
+| scene | v1 (today's format) or v2 payload: camera, environment, lights, figures, props (section 5.2) |
+| pose example | actions, setup id, support, contacts `[{figure, joint, target}]`, gaze target, airborne, occlusion notes, scene hash, limitations |
 | board receipt | scene hash, seed, art path, control paths, projected anchors, diagnostics, approval |
 | attempt | shot, board hash, route, model, prompt, attempt number, job id, asset, checks, estimated and billed cost |
 | voice | audio path, sample rate, words `[{text, onset, end?}]` |
 | captions | cues in sample time, layout, WebVTT sidecar |
 | mix | music regions with rights, gain and fades |
-| edit | fps, integer frame timeline of shots, voice, captions, mix, master path |
+| edit | fps, voice asset hash, intervals (below), captions, mix, master path |
 | release | platform, master hash, title, thumbnail, captions, rights, disclosure decision, visibility, remote id |
+| labour | run id, stage, task, start and end time, active seconds, blocker type, notes; entered by the producer |
+
+An edit is a list of replayable intervals, not a timeline rebuilt each run:
+
+```json
+{"startFrame": 38, "endFrame": 83, "shot": "ladder-side-1", "board": "sha256...",
+ "sourceInFrame": 0, "sourceOutFrame": 45, "transition": {"kind": "cut"}}
+```
+
+Frames are integers at the delivery fps; ranges are zero-based and
+half-open; an interval must be at least one frame long. Cut positions come
+from the voice hash plus each shot's cue and offset, never from rescanning
+captions. Changing a board hash, source range or voice hash marks the
+affected intervals and the master stale; changing only a mix region does not
+rebuild boards.
 
 Example shot (GPT):
 
@@ -146,10 +184,17 @@ Example shot (GPT):
  "mayHide": ["far wrist"], "motion": "hold", "cutFrom": "s1"}
 ```
 
-### 5.2 Scene record v2
+### 5.2 Scene records
 
-Version 1 (today's format, `lib/pose/README.md`) stays readable: an
-unversioned record means one figure, automatic framing, and today's defaults.
+Scenes use the same envelope as every other record: `{"kind": "scene",
+"version": 1 or 2, "id": ..., "payload": {...}}`. The loader validates the
+envelope, dispatches on kind and version, and converts v1 to v2 explicitly
+before rendering. Version 1 is today's format (`lib/pose/README.md`): one
+figure, automatic framing, today's defaults. For backward compatibility the
+CLI also accepts a bare, unwrapped v1 file such as those in `resource/pose/`;
+everything the pipeline writes is wrapped. `renderFrame` called directly
+takes a v1 payload until the v2 renderer lands.
+
 Version 2 adds:
 
 - **camera**: `mode` `"fixed"` (explicit position, look-at, vertical field of
@@ -162,8 +207,8 @@ Version 2 adds:
 - **look is required** on new records. Only dynamic poses use `"free"`.
 
 ```json
-{
-  "sceneVersion": 2, "id": "handoff-wide", "frame": {"w": 1080, "h": 1920},
+{"kind": "scene", "version": 2, "id": "handoff-wide", "payload": {
+  "frame": {"w": 1080, "h": 1920},
   "camera": {"mode": "fixed", "pos": [0, 1.35, 3.8], "at": [0, 1, 0], "verticalFovDeg": 42},
   "environment": {"type": "room", "floorCentre": [0, 0, 0], "size": [4, 2.8, 5], "visibleWalls": ["back", "left"]},
   "lights": [{"type": "directional", "direction": [0.6, -0.8, 0], "softness": 0.7}],
@@ -174,7 +219,7 @@ Version 2 adds:
      "pose": {"root": {"p": [0.46, 1, 0], "yaw": -65}, "look": [-0.46, 1.1, 0]}}
   ],
   "props": [{"id": "parcel", "t": "box", "mid": ["giver.lHa", "giver.rHa"], "size": [0.4, 0.28, 0.3]}]
-}
+}}
 ```
 
 Solving order: world props, then each figure against its anchors, then held
@@ -187,23 +232,32 @@ Each stage output is cached by the hash of its inputs, code version, tool
 versions, seed and model settings. A changed title rebuilds only the release;
 a changed spoken line rebuilds its audio, captions, affected cuts, mix and
 master. Outputs are written to a temporary file, checked, then renamed into
-place. Paid calls persist their reservation and intent before the network
-call and the provider's job id immediately after, so a crash resumes by
-polling rather than paying twice.
+place.
+
+**Paid calls.** Reservation decisions for a film are serialised under one
+lock shared by every worker and rerun. Under that lock, settled charges plus
+outstanding maximum charges plus the new maximum are checked against the cap,
+and the attempt key and reservation are written durably before submission.
+A returned job id is persisted at once and polled on resume. If a submission
+may have succeeded but no id was recorded, the reservation stays open: the
+attempt is reconciled by its key, replayed only if the adapter has verified
+the provider's de-duplication for that window, and otherwise marked
+unresolved until billing or job evidence settles it. A creative retake gets
+its own key and reservation.
 
 ## 6. Stages
 
 | Stage | Method | Failure handling | Acceptance |
 |---|---|---|---|
 | Script | Brief to beats: opening question, observable change, answer. 65 to 90 spoken words for a 30 to 45 second film. Claims tied to evidence | One redraft after notes; unsupported claims rejected | A viewer can answer the opening question from a specific image; producer approves meaning and pronunciation |
-| Voice | Human recording or TTS with word timings, decoded to 48 kHz mono | Missing marks or text mismatch blocks the beat | Ordered onsets, correct cue words, no clipped syllables |
+| Voice | Human recording or TTS, decoded to 48 kHz mono. For a short human read, hand-marked phrase bounds and cut cues on the actual take, stored with the audio hash | Missing required marks or text mismatch blocks the beat | Ordered onsets, correct cue words, no clipped syllables |
 | Shot list | Per beat: what is different on screen at the end, camera side, focal subject, cue, must-see, may-hide | Shots that merely illustrate the same noun are cut; tighten the script instead | Every line maps to a shot or an intentional hold; adjacent screen direction checked |
 | Storyboard | Shot to scene record (section 7), render sketch and diagnostics | Two repair rounds, then manual blocking | Required action identifiable at phone size with captions covered; hard diagnostics pass |
 | Animatic | Approved boards cut to the narration timings | Re-block shots that don't read in sequence | Producer approves the sequence |
 | Generation | Still from the approved board (route from section 10), downloaded and logged; motion only from approved stills | Bounded backoff on rate limits; one creative retake per shot; fall back to the drawn still | Must-see items present; start, middle and end of motion checked for drift |
 | Captions | Words grouped into phrases from the timings; WebVTT; optional burn-in | Reflow when a line changes | Two lines max, about 17 characters per second, inside the safe area |
 | Music | Start with silence; one owned or licensed bed, ducked under speech | Mute if it fights consonants or rights are unclear | Cue words audible without reading on a phone speaker |
-| Assembly | Integer frame timeline compiled to FFmpeg; H.264 and AAC in MP4 | Missing media stops with the shot id; never silently loop a short take | Correct size and fps, duration within one frame, cuts on cue frames, -16 LUFS integrated, peak at or below -1 dBTP |
+| Assembly | Integer frame timeline compiled to FFmpeg; H.264 and AAC in MP4 | Missing media stops with the shot id; never silently loop a short take; reversed or empty intervals rejected | Correct size and fps, duration within one frame, cut boundaries match the approved edit (cue sample rounded to the nearest frame, then the editorial offset applied), -16 LUFS integrated, peak at or below -1 dBTP |
 | Publish | Cover from an approved frame, title stating the actual comparison, release receipt | Missing rights or disclosure blocks release | Private upload watched on a phone before going public |
 
 ## 7. The hardest problem: shot description to scene record
@@ -217,8 +271,12 @@ geometry.
    two framings.
 2. **Retrieve a reference pose** by action and *contact topology* first
    (floor, seat, rail, rung, airborne; which hands and feet touch what), then
-   by words. Each reference scene is annotated with these facts. Unknown
-   actions go to manual blocking.
+   by words. Each reference scene has a validated `pose example` record
+   (setup, support, contact joints and targets, gaze target, airborne state,
+   occlusion notes). Two camera views of one setup share a setup id but stay
+   separate results. A candidate must be shown to contain the requested
+   contacts; text or embedding similarity is only a fallback. Unknown actions
+   go to manual blocking.
 3. **Resolve named anchors in metres** (rung 8 of this ladder, the top rail)
    from the same geometry the renderer uses, and declare which surface must
    touch which prop.
@@ -226,22 +284,182 @@ geometry.
    sizes, two offsets, projected in the delivery frame with the caption area
    reserved. Rank by must-see visibility, screen direction, frame margins and
    continuity.
-5. **Use the renderer as an oracle**: render, collect structured diagnostics
-   (figure, joint, requested and achieved values), and apply fixes from an
-   allow-list for at most two rounds. Never clear a warning by raising
-   flexibility.
+5. **Use the renderer as an oracle**: render, collect structured diagnostics,
+   and apply fixes from an allow-list for at most two rounds. Each diagnostic
+   carries a code so the repair knows what to change:
+
+   ```json
+   {"code": "ik.joint-range-exceeded", "figure": "climber", "endEffector": "rWr",
+    "target": "ladder.rung-7", "joint": "rEl", "requestedDeg": 160, "allowedDeg": [0, 150],
+    "suggestion": "move-root"}
+   ```
+
+   Codes include `target-outside-workspace`, `joint-range-exceeded`,
+   `pole-conflict`, `contact-distance`, `prop-intersection` and
+   `gaze-shortfall`. The allow-list may move a target, the root or a pole
+   hint; it may never raise flexibility or clear a diagnostic. `stand`
+   combined with reach targets is invalid, not repairable.
 6. **Separate solvable from readable.** Automatic checks: finite geometry,
    contact error (start at 3 cm or less), required regions visible after
    occlusion, gaze error (start at 10 degrees or less when gaze matters),
    frame margins, support under seated bodies, at least 60% of each figure in
    frame unless intended. Human judgement: acting, readability, weight,
    intended ambiguity.
-7. **Choose in sequence**: show two or three candidates between the previous
-   and next approved frames. Accepted records join the pose library and the
-   evaluation set.
+7. **Choose in sequence**: show two or three candidate framings in the rough
+   cut, between the previous and next approved frames. Approved records
+   become retrieval examples and regression fixtures.
 
-An **evaluation set** of 30 to 50 shot descriptions with human-accepted
-records (Grok) measures the method over time.
+An **evaluation set** of 30 to 50 shot descriptions (Grok) measures the
+method, kept apart from the retrieval library so the system cannot score well
+by retrieving the answer (GPT round 1). Split it by setup or brief family,
+keeping related views together; withhold the test descriptions, solutions and
+review notes from retrieval and tuning. Judge against the brief in sequence,
+allowing several valid compositions. Report first-pass accepts, accepts after
+repair, manual blocks, abandoned shots and producer minutes over all assigned
+briefs. A test case that enters the library is replaced before the next
+reported evaluation.
+
+## 7a. Cinematic language
+
+Draft 2 treated a frame as geometry: a correct figure, a camera, and what
+must be visible. A storyboard is more than that. It is where shot selection,
+camera movement, background, perspective and mood are decided, and the
+storyboard is the only place in this pipeline where those decisions are
+cheap. This section makes them explicit, recorded, drawn and checked.
+
+### 7a.1 The shot vocabulary
+
+Every shot record states these choices, each with a one-line reason tied to
+what the shot must make the viewer understand or feel:
+
+| Choice | Values | What it does |
+|---|---|---|
+| Size | extreme close-up, close-up, medium close-up, medium, medium long, wide, extreme wide; insert | Sets what the viewer can read and how intimate the moment feels |
+| Angle | eye level, low, high, overhead, worm's-eye, Dutch tilt | Power, vulnerability, unease; camera height is the subject of the pilot film |
+| Lens feel | wide (about 24 mm), normal (35 to 50 mm), long (85 mm and up) | Wide exaggerates depth and foreshortening and lets the camera come close; long compresses space and flattens the background. Stored as vertical field of view plus camera distance |
+| Composition | rule of thirds, centred and symmetrical, one-point perspective, leading lines, frame within a frame, negative space; headroom and lead room | Where the eye goes first, and which way the shot faces |
+| Depth layers | named foreground, midground and background elements | Depth and scale; a foreground element (a rung, a doorframe) makes a frame read as three-dimensional |
+| Movement | static, pan, tilt, dolly in or out, truck, pedestal or crane, arc, handheld; on stills, a slow push-in or drift | Reveals, follows or emphasises. A dolly changes perspective; a zoom does not |
+| Tonal key | high-key (light, low contrast), mid-key, low-key (dark, strong contrast), silhouette | The single biggest mood control, and visible even in a sketch |
+| Light motivation | the source in the world: window, overhead lamp, sun at a time of day (dawn, golden hour, blue hour, night), headlights, screen glow | Makes the key believable and keeps light direction consistent across cuts |
+
+Example additions to a shot record:
+
+```json
+{"size": "medium close-up", "angle": "low", "lens": "wide",
+ "composition": {"rule": "thirds", "subject": "left", "leadRoom": "right"},
+ "layers": {"fg": "lower rung", "mg": "near boot", "bg": "sky"},
+ "move": {"type": "dolly-in", "frames": 45, "ease": "in-out"},
+ "key": "low-key", "motivation": "late sun behind the ladder, rim light",
+ "reason": "Make the near boot loom so the hidden hand is felt as missing"}
+```
+
+### 7a.2 Grammar across cuts
+
+Shots are chosen as a sequence, not one at a time:
+
+- **The 180-degree line**: the camera stays on one side of the line between
+  two subjects or along a direction of travel, so screen direction holds.
+- **Eyelines and screen direction** match across a cut; a look off-screen
+  left is answered by a subject on the right.
+- **Size progression**: establish, then move closer as information narrows;
+  jump in size by enough that a cut reads as intentional.
+- **Cut on action or on a look**, and on the narration's cue word.
+- **Rhythm**: shot length follows how long the viewer needs to find the
+  must-see element, then the cut.
+
+The 180-degree line, screen direction, eyeline side and size jump between
+adjacent shots can all be checked automatically from scene records; framing
+taste cannot.
+
+### 7a.3 How it is drawn
+
+The sketch must show these choices, or the animatic cannot be judged:
+
+- **Value pass (light versus dark).** Line art alone cannot show mood. Add a
+  simple two- or three-tone block-in (shadow masses as flat greys over paper,
+  like a thumbnail value study), driven by the tonal key and the light
+  motivation. High-key boards stay mostly paper; low-key boards are mostly
+  dark with the subject picked out; a silhouette is a flat dark shape against
+  light.
+- **Background and perspective.** Environments are drawn with deliberately
+  lower line weight and detail than the figure, so the subject reads first.
+  The horizon line and vanishing points follow from the camera and are drawn
+  faintly; horizon placement is a composition choice, not an accident.
+- **Composition guides** (thirds grid, safe area, caption band) as an
+  optional overlay on review sheets, with headroom and lead room checked.
+- **Camera movement.** Scene v2 gains an optional camera path: keyframes of
+  position, look-at and field of view over frames, with easing. The renderer
+  draws start and end frames with movement arrows on the board, and renders
+  the in-between frames for the animatic so moves are judged in time, not
+  imagined. The same path becomes the movement instruction for image-to-video
+  and the push-in or drift on held stills in assembly.
+
+### 7a.4 Where it plugs in
+
+| Stage | What changes |
+|---|---|
+| Shot list | Chooses from the vocabulary, with a reason per choice, and checks the sequence grammar |
+| Storyboard (section 7) | Maps vocabulary to numbers: size and lens to camera distance and field of view, angle to camera height and pitch, composition to where the subject lands in frame; the cinematic heuristics guide becomes this mapping |
+| Animatic | Shows movement and tonal key in time |
+| Text route | Uses the vocabulary words a model understands ("low-angle wide-lens medium close-up, low-key, rim light from behind") |
+| Generation | The approved key, motivation and movement go into the prompt; the value pass can serve as a lighting reference |
+| Review | Thirds grid and safe-area overlay; automatic flags for a crossed 180-degree line, missing lead room, a weak size jump, or a subject with too little tonal contrast against its background |
+
+### 7a.5 A reference library of shot recipes
+
+Alongside the pose library, keep a small library of named shot recipes, each
+a scene record plus a rendered board and a note on when to use it: for
+example an establishing wide to insert, an over-the-shoulder pair, a
+one-point-perspective corridor, a low-angle hero, a high-angle isolation, a
+silhouette against a window, a dolly-in to a realisation, and a dolly zoom.
+They give the shot step starting points the way reference poses do for the
+figure.
+
+### 7a.6 Style profiles: one look per film
+
+The vocabulary is not chosen freely shot by shot. Each film (or series) has
+a **style profile**, and every shot choice is made inside it, so the film is
+stylistically consistent. The profile records preferences and limits for
+each dimension of the vocabulary, plus the things that only exist at film
+level:
+
+| Field | What it fixes |
+|---|---|
+| Framing and composition | Preferred rules (symmetry, thirds, deep staging), headroom habits, how often to break them |
+| Angle and lens habits | Preferred and avoided angles; lens feel (flat long lens or close wide lens) |
+| Movement | Allowed moves and their character: locked-off, precise lateral tracking, whip pans, handheld, slow push-ins |
+| Tonal key and contrast | Default key, contrast range, whether black-and-white |
+| Light | Typical motivations, hard or soft, time of day, practical lights |
+| Palette | Colour scheme or monochrome; used by generation, ignored by the value pass |
+| Texture | Grain, softness, halation; generation and grading only |
+| Editing | Average shot length, cut types, transitions, rhythm against narration |
+| Aspect ratio | Within the delivery frame: full frame, or a letterboxed or pillarboxed image area |
+
+Illustrative profiles, described by their visual traits:
+
+| Profile | Traits |
+|---|---|
+| Symmetrical tableau (in the manner of Wes Anderson) | Centred one-point compositions, flat frontal staging, eye-level camera, precise lateral tracking and whip pans, high-key, pastel palette, locked-off frames held for a beat |
+| Colour-field epic (in the manner of Zhang Yimou) | Large saturated colour fields with symbolic meaning, wide and extreme-wide compositions, patterns of many figures, slow deliberate movement, strong graphic shapes |
+| Hong Kong police thriller | Handheld and fast moves, low angles, Dutch tilts, long lenses on crowded streets, night exteriors with neon and sodium light, wet surfaces, short shot lengths |
+| Film noir, black and white | Low-key, hard single sources, deep shadows and silhouettes, venetian-blind and window shadow patterns, wet streets at night, low and canted angles, slow push-ins |
+
+How it is used:
+
+- The shot list and the scene step choose from the profile's preferred
+  values first; a deliberate break is allowed but must carry a reason.
+- The review sheet flags shots that drift from the profile (a handheld shot
+  in a locked-off film, a high-key shot in a noir).
+- The value pass uses the profile's key and contrast; noir boards are mostly
+  dark, tableau boards mostly paper.
+- Generation receives the profile's traits as plain description of the look
+  (composition, light, palette, texture), not just a name, so results stay
+  consistent across shots and don't depend on how a model reads a name.
+  Prompts describe a style; they never ask a model to reproduce a specific
+  film's frames.
+- The style profile is approved with the script (approval 1), because it
+  shapes every shot after it.
 
 ## 8. Storyboard renderer roadmap
 
@@ -249,15 +467,20 @@ records (Grok) measures the method over time.
 |---|---|---|---|
 | 1 | Regression tests on the 18 reference scenes and the warnings | Everything below changes drawing code | Any drawing change fails until goldens are updated deliberately |
 | 2 | Per-render state: remove globals (`P`, `GS`, `HS`, `BL`, `EX`, `FACE`, `CLAMPS`, `rnd`) | Multi-figure and repeat renders depend on it | Render order cannot change any output |
-| 3 | Fixed camera mode beside today's auto-fit, with frame size and near-plane clipping | Today `draw` always rescales to the figure, so a camera cannot stay put across shots or place a subject on a third | A figure walking across a fixed frame changes position and size |
-| 4 | IK guards, joint limits on reach targets, named contact sites, structured diagnostics | Needed by section 7 | An impossible elbow on a reachable target is reported |
-| 5 | Control exports: clean contour, joint skeleton, depth, object-id pass | Generation routes and visibility checks need them | Overlays line up with the sketch in both ladder views |
+| 3 | Public fixed camera: vertical field of view, delivery frame size, near-plane clipping. Build on the fixed scale-and-offset path `draw` already uses for `renderLineup` (`sh.fix`) | Scene records always auto-fit the projected figure into a 320 x 200 frame, so a camera cannot stay put across shots or place a subject on a third | A locked camera keeps a world marker on the same pixel while the subject moves; a primitive crossing the near plane is clipped, never projected from behind the lens |
+| 4 | IK guards, joint limits on reach targets, named contact sites, coded diagnostics (section 7, step 5) | Needed by section 7 | An impossible elbow on a reachable target is reported with its code |
+| 5 | Stable part and prop ids through geometry expansion. A visibility check for occlusion-critical regions that compares camera-space depth along shared camera rays using simple surface proxies. Contour, skeleton and depth exports when a consumer needs them | `draw` sorts each form by one average depth (`items.sort`), so a painted id pass can line up perfectly with a physically wrong overlap, exactly where a rung crosses a boot | In a crossing-bars fixture the visible id switches at the known crossing; both ladder views agree with the drawn overlaps; disagreements are flagged for review, never auto-accepted |
 | 6 | Several figures in one depth-sorted draw list, namespaced joints | Two-person scenes | Two people share a floor with correct overlap |
 | 7 | Environment presets and one key light with floor shadows | Places and mood | A reverse angle keeps the door and light direction |
 | 8 | Start and end poses with locked contacts, for motion planning | Guide image-to-video and catch foot slide | Interpolation that breaks a locked contact fails |
+| 3a | Value pass: two- or three-tone shadow block-in from tonal key and light motivation | Light versus dark is the main mood control and must be visible in boards (section 7a.3) | High-key, low-key and silhouette versions of one scene read as different moods at phone size |
+| 3b | Camera paths: keyframed position, look-at and field of view with easing; start and end boards with movement arrows; in-between frames for the animatic | Movement is a shot choice and must be judged in time | A dolly-in and a zoom from the same start frame visibly differ in perspective |
+| 3c | Composition overlay and checks: thirds grid, safe area, caption band, headroom and lead room | Framing must be reviewable and partly checkable | Subject placed on a third by a fixed camera lands within tolerance |
+| 6a | Background drawn at lower line weight and detail; faint horizon and vanishing points | The subject must read first; perspective must be visible | In a street preset, the figure is still the first thing a viewer finds |
 
-Later, from draft 1: concave outlines, per-profile muscle shapes, night,
-headlights and wet-ground lighting.
+Rows 3a to 3c follow row 3 (they need the fixed camera); row 6a goes with
+environments. Later, from draft 1: concave outlines, per-profile muscle
+shapes, night, headlights and wet-ground lighting.
 
 ## 9. Testing
 
@@ -266,7 +489,9 @@ headlights and wet-ground lighting.
   When a golden must change, render old, new and a difference image side by
   side for the human, who approves before the update. Region checks (grip,
   gaze, pelvis join, V hand) can be added if whole-frame comparison misses
-  local defects.
+  local defects. A **renderer manifest** names every fixture, its seed, its
+  expected warning codes and whether it is a frame, sheet or line-up case; a
+  folder scan may discover files but does not decide coverage.
 - **Geometry.** Unit tests on joints, projection, contacts and warnings,
   independent of drawing. Adversarial cases: invalid enums, unknown joints,
   coincident wrist and shoulder, camera looking straight down, unreachable
@@ -284,33 +509,44 @@ headlights and wet-ground lighting.
 
 ## 10. The generation route experiment
 
-Run before building the generation adapter.
+Run a capped manual pilot before building the generation adapter. The
+business question is whether blocking a shot in metres earns its producer
+time, so the main comparison is between whole workflows, not just between
+inputs. (A text prompt derived from a finished scene record already carries
+the director's camera and contact decisions, so comparing it with the board
+only measures the effect of sending the picture.)
 
-- Eight shot intents, including the ladder pair, child behind a rail,
-  carrying a box, dive toward camera, floor lift, the V hand and a neutral
-  standing shot.
-- Three routes: text only (a deterministic shot description from the scene
-  record), reference image (the board plus the same text), and structural
-  control (contour or depth export) where the chosen model supports it.
-- Two attempts per route per intent, same model, style and aspect ratio.
-- Labels hidden and shuffled. Two reviewers score contact, viewpoint, subject
-  count, readability and fit with the previous cut, and log minutes including
-  board creation.
-- **Decision rule, set in advance**: adopt a board-driven route for a shot
-  class if it beats text only on first-pass acceptance by at least 20
-  percentage points without raising the cost per accepted still. Ties: boards
-  for hard geometry, text for simple shots. Both fail contacts: ship the
-  drawn frame.
-- Cost: about 48 stills, roughly $4 at the 1080p rate above, paid from
-  development, not a film's budget.
+- Freeze a set of unseen shot briefs, the previous cut, the must-see criteria
+  and the delivery shape. Include ordinary explanatory inserts as well as
+  hard contacts. Alternate views of one setup count as one case.
+- **Workflow comparison.** One operator writes a direct prompt from the
+  brief. Independently, the same brief is blocked as a scene and submitted as
+  the board plus a scene-derived prompt. Same model, style, size and take
+  allowance. Time both from receiving the brief through review and repair.
+- **Isolating the picture.** Where the workflows differ, submit the
+  scene-derived prompt alone on the disputed shots. Try structural control
+  (contour or depth) only on a demonstrated failure, with a model that
+  supports it.
+- **Judging.** Labels shuffled; first takes judged against the frozen brief
+  in the cut. The approved drawing is scored too, at zero generation spend.
+  Record retries, unrecoverable failures, billed cash and active minutes,
+  including time on rejected shots.
+- **Decision rule, set before running.** The producer sets what one extra
+  usable shot is worth in minutes and cash. Report paired wins, losses and
+  ties with counts. With eight cases one changed verdict moves the rate by
+  12.5 points, so a small or mixed result leaves routing provisional; any
+  proposed default is confirmed on fresh briefs in phase C before automation
+  is funded.
+- Cost: priced against a separate development cap before running, not a
+  film's budget.
 
 ## 11. Phased delivery
 
 | Phase | Film | Exit decision |
 |---|---|---|
-| A. First cut, no image model | 15 to 20 seconds: the side-view ladder climb, cut to the same climb from below, back to the side, while the narrator explains what the low camera hides. Existing PNGs as portrait panels, human or Polly voice, captions, hard cuts | Someone new to the project can say which contact disappeared and why; plays on a phone |
+| A. First cut, no image model | 15 to 20 seconds built on the ladder pair, whose pose and ladder are identical, so the lesson is about what a viewpoint shows. Establish the hands in the side view and ask the viewer to track the far hand; cut low and leave a beat to look; return to the side for the answer. Use a portrait crop or a detail insert, not full-width panels, so hands and captions stay legible on a phone. Human or Polly voice, captions, hard cuts | Before recording final narration, show the two views silently on a phone to a fresh viewer: they point to the grip in the first view and say what they can still see in the second. If the intended change is unclear, reframe or choose a clearer comparison. In the voiced cut, check the viewer understands the climber held the pose and only the camera moved |
 | B. First generated film | 30 to 45 seconds; approved animatic; one generated still replacing a drawing, at most one motion shot; parallel cut with the drawing | Private upload with captions and receipt under $5 cash; producer minutes recorded |
-| C. Repeatable explainers | Route experiment done; description-to-scene with repair; three unseen briefs including a non-ladder scene | Two of three films within the cash cap and a 45-minute labour target |
+| C. Repeatable explainers | Route experiment done; description-to-scene with repair; three unseen briefs including a non-ladder scene | Two of three films within the cash cap and a 45-minute labour target, counting all active producer minutes from brief to private master (rejected takes and manual repair included, provider waiting excluded) from the labour ledger. Report median and maximum by stage and the number of shots needing manual blocking. Swapping out a hard brief counts as a failure |
 | D. Continuity and languages | Second-language recut; two figures in one room; a silent parcel handoff | A fluent reviewer signs off; two viewers identify who gives and who hesitates |
 | E. Drama | One 30-second dialogue scene, starting with off-camera speech | Roles identifiable across cuts; decide whether drama is worth its cost |
 
@@ -330,8 +566,21 @@ Run before building the generation adapter.
 
 ## 13. Open decisions for the human
 
-Q1 to Q6 in section 3. Also: whether the first channel's visual style is the
-sketch itself or generated plates (can be per film; phase A uses the sketch).
+Q1 to Q6 in section 3. Also:
+
+- Q7. The first channel's visual style: the sketch itself or generated
+  plates (can be per film; phase A uses the sketch), and which style profile
+  the first films use.
+- Q8. How many active producer minutes one extra accepted shot is worth
+  (needed for the section 10 decision rule).
+- Q9. Which recurring audience question justifies a second film after the
+  ladder demonstration.
+
+Raised by round 1 and not yet answered: when a setup should be reused for
+the next shot versus rebuilt; which contact and support checks are truly
+machine-verifiable on a sketch; which shot classes lose enough in a held
+drawing to justify buying motion; and how large a test sample is enough to
+show a reference library helps rather than merely retrieving familiar poses.
 
 ## 14. Work breakdown
 
@@ -348,7 +597,7 @@ paid service.
 | Voice before visuals, animatic approval | GPT | Draft 1 and Grok put visuals first |
 | Fixed camera mode before environments | GPT, confirmed in code | Draft 1 and Grok missed that framing is always automatic |
 | Must-see / may-hide / cut-from on shots | GPT | — |
-| Cost reservation and job ids before network calls | GPT | — |
+| Cost reservation and job ids before network calls | GPT | Round 1: serialised per film, ambiguous submissions stay charged (section 5.3) |
 | Route experiment with a pre-set decision rule | GPT, widened with Grok's structural-control route | Grok's "control maps are the primary route" kept as a candidate, not a decision |
 | Depth and pose exports | Grok, merged with GPT's contour and object-id passes | — |
 | Evaluation set of 30 to 50 descriptions | Grok | — |
@@ -360,10 +609,17 @@ paid service.
 | TypeScript orchestrator | Grok | Rejected: the agreed stack is dependency-free JavaScript |
 | Web review UI | Grok | Deferred: a generated HTML review sheet covers phases A to C |
 
-Model and price facts checked on 2026-11-24 against Runway's pricing page,
-Amazon Polly pricing, YouTube's Shorts help page, Cartesia's API docs, and
-provider listings for Kling 4.0, Seedance 2.5, Wan 3.0, MiniMax H3, Gemini
-Omni Flash and FLUX 3.
+Model and price facts were spot-checked on 2026-11-24 against these pages.
+They remain **verify** until the purchase record in section 3.2 is made:
+
+- Runway API pricing: https://docs.dev.runwayml.com/guides/pricing/
+- Amazon Polly pricing: https://aws.amazon.com/polly/pricing/
+- Polly speech marks: https://docs.aws.amazon.com/polly/latest/dg/speechmarks.html
+- YouTube Shorts length and shape: https://support.google.com/youtube/answer/15424877
+- Cartesia TTS timestamps: https://docs.cartesia.ai/api-reference/tts/websocket
+- Seedance 2.5, Wan 3.0, Kling 4.0 comparison: https://wavespeed.ai/blog/ai-comparisons/seedance-2-5-vs-wan-3-0-vs-kling-4-0/
+- MiniMax H3 model card: https://huggingface.co/minimaxai/minimax-h3
+- Gemini Omni Flash: https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash
 
 ## 16. Flywheel status
 
@@ -372,8 +628,34 @@ Omni Flash and FLUX 3.
 | Foundation bundle | Done |
 | Initial plan | Draft 1 |
 | Competing plans | Done: GPT and Grok |
-| Synthesis | This document, draft 2 |
-| Refinement rounds (4 to 5) | Not started |
-| Convert to beads | Updated to draft 2 |
-| Polish beads | One pass after the update |
+| Synthesis | Draft 2 |
+| Refinement rounds (4 to 5) | Round 1 applied (Copilot, GPT) plus the human's cinematography and style notes: draft 3 |
+| Convert to beads | Updated to draft 3 |
+| Polish beads | One pass after each update |
 | Swarm | Not planned at this size |
+
+## 17. Refinement log
+
+Ratings: **agree** (applied as proposed), **partly** (applied with changes),
+**reject** (not applied). Diffs were applied by hand where they did not
+apply cleanly.
+
+### Round 1
+
+| # | Source | Change | Severity | Rating | Where and why |
+|---|---|---|---|---|---|
+| C1 | Copilot | Machine-readable pose-example records; retrieval must prove the contacts exist | critical | agree | 5.1, 7 step 2. Prose descriptions cannot be queried |
+| C2 | Copilot | Scenes use the common envelope; dispatch on kind and version; no `sceneVersion` | critical | partly | 5.2. Applied, but the CLI still accepts bare v1 files so the 18 reference scenes and today's commands keep working |
+| C3 | Copilot | Edit as replayable half-open frame intervals | important | agree | 5.1. Merged with G6's cue offsets |
+| C4 | Copilot | Coded IK and contact diagnostics so repair knows what to change | important | agree | 7 step 5, roadmap row 4 |
+| C5 | Copilot | Renderer manifest naming fixtures, seeds and expected warnings | important | partly | 9. Manifest added; the claim that golden SVG text breaks on harmless formatting does not hold, since the text is generated by our own code |
+| C6 | Copilot | Producer-entered labour ledger as a phase C exit criterion | important | agree | 5.1, 11 |
+| G1 | GPT | Route experiment compares whole workflows (direct prompt vs blocking), counts setups once, treats small results as provisional | critical | agree | 10. Draft 2's design gave every arm the director's decisions, so it could not answer whether blocking pays |
+| G2 | GPT | Phase A: silent test first, portrait crop or detail insert, lesson about viewpoint | important | agree | 11. Checked: the two ladder scenes do share pose and props |
+| G3 | GPT | Serialise reservations per film; ambiguous submissions stay charged | critical | agree | 5.3 |
+| G4 | GPT | Keep the evaluation set apart from the retrieval library | important | agree | 7 |
+| G5 | GPT | Fixed camera builds on the existing `sh.fix` path; single-depth sort cannot support visibility checks | important | agree | 8 rows 3 and 5. Both code claims checked and correct; it also corrects draft 2's "always rescales" |
+| G6 | GPT | A shot is an appearance (return cuts reuse a setup); signed cue offset; hand-marked timing for human reads | important | agree | 4, 5.1, 6 |
+| G7 | GPT | Auditable purchase record before the first paid call | important | partly | 3.2, 15. Record added and source URLs listed; the facts were spot-checked on 2026-11-24, not unverified, but stay "verify" until the purchase record exists |
+| H1 | Human | Cinematography: shot selection, movement, background, perspective, mood, light versus dark | — | agree | New section 7a, roadmap rows 3a to 3c and 6a |
+| H2 | Human | Stylistic consistency per film | — | agree | New section 7a.6, style profile record |

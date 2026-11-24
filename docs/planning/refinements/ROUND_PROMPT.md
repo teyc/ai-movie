@@ -7,7 +7,7 @@ Read, in this folder:
 
 You may read the other files in docs/planning/ (earlier competing plans and earlier refinement rounds) for context, but review only PLAN_FOR_AI_MOVIE.md. Do not repeat a change an earlier round already proposed unless you disagree with how it was handled.
 
-Task: propose your best revisions to the plan — to make it a better architecture, add missing features, make it more robust and reliable, more correct about the existing code, and more likely to produce good, watchable films at low cost and low producer effort. Challenge anything you think is wrong, including the core bet. Do not pad: every change must earn its place.
+Task: propose your best revisions to the plan — to make it a better architecture, add missing features, make it more robust and reliable, more correct about the existing code, and more likely to produce good, watchable films at low cost and low producer effort. Challenge anything you think is wrong, including the core bet. Give equal weight to the film craft, not only the software: shot selection, camera movement, composition, background and perspective, mood, light and dark, editing rhythm, and keeping one consistent style across a film (section 7a). Do not pad: every change must earn its place.
 
 For EACH proposed change give:
 1. A short title.
