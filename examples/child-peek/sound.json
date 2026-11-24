@@ -1,0 +1,179 @@
+{
+  "kind": "sound-design",
+  "version": 1,
+  "id": "child-peek",
+  "payload": {
+    "shots": "child-peek",
+    "designedWith": "skills/sound-design",
+    "timeline": "Frames at 30 fps from the assembled voice (runs/child-peek/voice/timed-voice.json): sh1 0, sh2 192, sh3 312, sh4 372, sh5 447. Anchors below are relative, so they survive a re-timed voice.",
+    "idea": "One source, two perspectives. The engine in sh3 is the scooter itself, heard far away (quieter, duller, more reverberant), so it can pass for Dad's car. On the cut to sh4 we hear it close and it is plainly a scooter. The twist is fair because the sound never lied.",
+    "locations": [
+      {
+        "id": "balcony-evening",
+        "roomTone": "room-tone/exterior-urban-quiet",
+        "ambience": [
+          "ambience/distant-traffic-evening",
+          "ambience/birds-settling-dusk"
+        ],
+        "note": "Continuous under all five shots, unchanged across cuts, so it reads as one place. Thins to room tone only in sh5."
+      }
+    ],
+    "music": {
+      "bed": "music/gentle-warm-short",
+      "enter": {
+        "anchor": {
+          "kind": "speech",
+          "cue": "better",
+          "offsetFrames": -6
+        }
+      },
+      "lift": null,
+      "end": {
+        "anchor": {
+          "kind": "picture",
+          "beat": "end of film",
+          "frame": null
+        },
+        "fade": "over the last 1.5 s"
+      },
+      "note": "Silent until 'Even better', so the one warm moment arrives with it."
+    },
+    "sounds": [
+      {
+        "id": "fx1",
+        "shot": "sh1",
+        "layer": "spot",
+        "what": "Streetlight ticking and buzzing on",
+        "tag": "spot/streetlight-tick-buzz",
+        "tier": "support",
+        "anchor": {
+          "kind": "picture",
+          "beat": "streetlight flickers on",
+          "frame": 6
+        },
+        "edit": "hard",
+        "perspective": "From the street, near the post at frame left",
+        "mustHear": false,
+        "reason": "Marks dusk, and it is the light the scooter will later round"
+      },
+      {
+        "id": "fx2",
+        "shot": "sh2",
+        "layer": "foley",
+        "what": "Fingertips tapping the metal rail, a few light taps",
+        "tag": "foley/fingers-tap-metal-rail",
+        "tier": "support",
+        "anchor": {
+          "kind": "speech",
+          "cue": "car",
+          "offsetFrames": 20
+        },
+        "duration": "about 2 s, ending before the cut to sh3",
+        "edit": "hard",
+        "perspective": "Close, at the rail (Mia's hands)",
+        "mustHear": false,
+        "reason": "A small sound of waiting, kept clear of the cue word 'car'; matches her performance notes"
+      },
+      {
+        "id": "fx3",
+        "shot": "sh3",
+        "layer": "spot",
+        "what": "A small engine approaching, distant and indistinct: could be a car",
+        "tag": "spot/scooter-pass-distant",
+        "tier": "featured",
+        "anchor": {
+          "kind": "picture",
+          "beat": "cut to sh3",
+          "frame": 312,
+          "offsetFrames": -15
+        },
+        "edit": "j-cut",
+        "perspective": "Offscreen, screen-left, far then nearer; heard from the balcony (Mia's ears): low-passed and reverberant",
+        "mustHear": true,
+        "reason": "Plants Dad's car without words. The same recording as fx4, processed for distance"
+      },
+      {
+        "id": "fx4",
+        "shot": "sh4",
+        "layer": "spot",
+        "what": "The same engine, close: a scooter's higher whine settling to idle",
+        "tag": "spot/scooter-arrive-idle",
+        "tier": "featured",
+        "anchor": {
+          "kind": "picture",
+          "beat": "cut to sh4",
+          "frame": 372,
+          "offsetFrames": 0
+        },
+        "edit": "hard",
+        "perspective": "Street level, close to the scooter",
+        "mustHear": true,
+        "reason": "The sound changes character exactly on the reveal cut"
+      },
+      {
+        "id": "fx5",
+        "shot": "sh4",
+        "layer": "spot",
+        "what": "A short brake squeak",
+        "tag": "spot/scooter-brake-squeak",
+        "tier": "featured",
+        "anchor": {
+          "kind": "speech",
+          "cue": "notdad",
+          "offsetFrames": -4
+        },
+        "edit": "hard",
+        "perspective": "Close",
+        "mustHear": true,
+        "reason": "The beat 'Not Dad' follows; the line lands after the squeak, not on the cut"
+      },
+      {
+        "id": "fx6",
+        "shot": "sh5",
+        "layer": "spot",
+        "what": "Scooter engine switched off",
+        "tag": "spot/scooter-engine-off",
+        "tier": "support",
+        "anchor": {
+          "kind": "picture",
+          "beat": "cut to sh5",
+          "frame": 447,
+          "offsetFrames": 6
+        },
+        "edit": "hard",
+        "perspective": "From the balcony, below",
+        "mustHear": false,
+        "reason": "Clears the air: a beat of room tone only, then 'Even better'"
+      }
+    ],
+    "silence": [
+      {
+        "shot": "sh5",
+        "from": "fx6",
+        "to": "cue better",
+        "what": "Ambience thins to room tone"
+      }
+    ],
+    "levels": "Tiers: narration, then featured effects, then ambience, then room tone. Nothing featured sits on a cue word. Mix to -16 LUFS integrated, peaks at or below -1 dBTP.",
+    "phoneCheck": "The engine and scooter must be recognisable by their mid and high range (whine, not throb); phone speakers lose the low end.",
+    "checks": {
+      "eyesClosed": "Evening and distant traffic; a light switching on; small tapping (waiting); an engine coming, far away; it arrives close and it's a scooter, brakes; it stops; quiet; 'Even better' and music.",
+      "soundOff": "The empty parking bay in sh1 and the single light in sh3 carry the set-up; checked on the boards in am-mcd.3."
+    },
+    "sourcing": {
+      "status": "Not sourced. Downloads need the human's approval. Rule: owned recordings or CC0 only, each with a provenance record (am-mcd.5 separates owned from CC0).",
+      "howToFind": "freesound.org, filtered to the Creative Commons 0 licence (check the licence on each sound page; many street recordings there are CC BY and need attribution, which our rule excludes). Or record the effects yourself on a phone: a scooter passing and idling outside, a metal railing tapped with fingertips.",
+      "queries": {
+        "fx1": "streetlight hum OR street lamp buzz",
+        "fx2": "fingers tap metal railing",
+        "fx3/fx4": "scooter OR moped pass by idle (one recording serves both: fx3 is the same sound low-passed, quieter and reverberant)",
+        "fx5": "scooter brake squeak OR bicycle brake squeal short",
+        "fx6": "scooter engine off OR moped switch off",
+        "ambience": "suburb evening ambience distant traffic birds",
+        "roomTone": "exterior quiet night room tone"
+      },
+      "candidates": [],
+      "searchedOn": "2026-11-24: no CC0 candidate confirmed from search results; the strongest finds (InspectorJ, klankbeeld) are attribution-only"
+    }
+  }
+}

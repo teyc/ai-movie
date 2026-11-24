@@ -35,7 +35,7 @@
         },
         "layers": {
           "fg": "streetlight post, left edge",
-          "mg": "balcony rail with Mia",
+          "mg": "street and kerb with an empty, marked parking bay; balcony rail with Mia above",
           "bg": "lit window and building wall"
         },
         "key": "mid-low",
@@ -58,7 +58,8 @@
         },
         "mustSee": [
           "a small figure at the rail",
-          "the lit window behind her"
+          "the lit window behind her",
+          "the empty parking bay at the kerb below"
         ],
         "mayHide": [
           "Mia's hands"
@@ -78,6 +79,9 @@
             "timing": "Still for the whole shot; the stillness is the point",
             "fromPrevious": "Opening shot"
           }
+        ],
+        "mustHear": [
+          "the streetlight ticking on (support)"
         ]
       },
       {
@@ -143,6 +147,9 @@
             "timing": "The lean holds; the tapping is the only movement",
             "fromPrevious": "From still to leaning: the waiting has an edge now"
           }
+        ],
+        "mustHear": [
+          "fingers tapping the rail, after 'car' (support)"
         ]
       },
       {
@@ -163,7 +170,7 @@
           "subject": "headlight glow at the corner, lower-left third"
         },
         "layers": {
-          "fg": "edge of the rail and Mia's raised shoulder, right",
+          "fg": "edge of the rail and Mia's raised shoulder, right (stated once: this is the foreground)",
           "mg": "street",
           "bg": "corner and streetlight"
         },
@@ -184,8 +191,8 @@
           "note": "Point of view: corner stays screen-left"
         },
         "mustSee": [
-          "headlights rounding the corner",
-          "Mia rising on her toes at the frame edge"
+          "one bright light rounding the corner under the streetlight",
+          "Mia's raised shoulder at the right edge, above the rail"
         ],
         "mayHide": [
           "the vehicle itself"
@@ -204,6 +211,9 @@
             "timing": "Held; the light does the moving",
             "fromPrevious": "Higher on her toes: hope rising"
           }
+        ],
+        "mustHear": [
+          "an engine approaching from screen-left, starting about 0.5 s before the cut (featured)"
         ]
       },
       {
@@ -238,7 +248,8 @@
           "looks": []
         },
         "mustSee": [
-          "a pizza box, clearly square, on the back of the scooter"
+          "a scooter, clearly two-wheeled, with a square pizza box on the back",
+          "its single headlight, the light from sh3"
         ],
         "mayHide": [
           "the rider's face"
@@ -257,6 +268,10 @@
             "timing": "The moment of stopping",
             "fromPrevious": "New character; Mia is off screen"
           }
+        ],
+        "mustHear": [
+          "the engine resolving into a scooter's whine on the cut (featured)",
+          "a brake squeak just before 'Not Dad' (featured)"
         ]
       },
       {
@@ -321,6 +336,10 @@
             "timing": "Arms already up on the first frame: the cut is the jump",
             "fromPrevious": "From held stillness to full extension, rhyming with shot 1's framing"
           }
+        ],
+        "mustHear": [
+          "the scooter engine cutting out, then a beat of room tone before 'Even better' (support)",
+          "the music bed entering under 'better'"
         ]
       }
     ],

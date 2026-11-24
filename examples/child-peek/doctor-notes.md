@@ -14,6 +14,7 @@ notes below.
 | 6 | minor | all | Pacing: draft 1 had four near-equal 4.5 s beats | Durations now 4.5, 4, 2, 2.5, 4.5: a short silent beat and quick reveal before the longest hold on the final image | applied |
 | 7 | minor | b4 | Is a pizza scooter readable as a drawing at phone size? | Pizza box must be a clear square on the back, and the scooter under the streetlight; flag for the shot list as a must-see | passed to shot-list |
 | 8 | minor | b1, b5 | The final image should rhyme with the first | Both show Mia at the rail with the warm window behind; first from far below and still, last closer and in motion | applied |
+| 9 | critical | b1 to b4 | With the sound off, nothing shows a car: only the narration says Mia is waiting for Dad's car, so "Not Dad" pays off nothing, and the line about a sound has no sound (raised by the human, draft 3) | Plant it twice. Picture: an empty parking bay at the kerb in b1. Sound: an engine heard before anything is seen (b3), resolving into the scooter's whine on the cut (b4). One light rounding the corner, not a pair, as a fair hint. Sound plan in sound.json | applied (draft 4) |
 
 ## Balance and humour
 

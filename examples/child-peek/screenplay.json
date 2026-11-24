@@ -16,7 +16,7 @@
           {
             "id": "b1",
             "structureBeat": "ki",
-            "action": "From the street: a lit third-floor window, and in front of it a small figure on tiptoe at the balcony rail, chin just over the top. The streetlight on the corner flickers on.",
+            "action": "From the street: a lit third-floor window, and in front of it a small figure on tiptoe at the balcony rail, chin just over the top. Below her, an empty parking bay at the kerb. The streetlight on the corner flickers on.",
             "effect": "A quiet evening; this small person is waiting for something.",
             "characters": [
               "mia"
@@ -102,7 +102,7 @@
           {
             "id": "b3",
             "structureBeat": "ten",
-            "action": "Looking down from the balcony: headlights swing round the corner under the streetlight. Mia, at the edge of frame, rises higher on her toes.",
+            "action": "Looking down from the balcony: an engine grows from somewhere out of sight, then a single bright light swings round the corner under the streetlight. Mia, at the edge of frame, rises higher on her toes.",
             "effect": "Hope: this is it. A held silent beat before the twist.",
             "characters": [
               "mia"
@@ -116,7 +116,7 @@
           {
             "id": "b4",
             "structureBeat": "ten",
-            "action": "The headlight belongs to a delivery scooter, a pizza box strapped on the back, pulling up to her building.",
+            "action": "The light belongs to a delivery scooter, a pizza box strapped on the back, pulling up to her building.",
             "effect": "Surprise and a small letdown: not Dad.",
             "characters": [],
             "spoken": [
@@ -213,6 +213,7 @@
         "languageCode": "en-AU",
         "note": "Chosen by the human in AI Studio, 2026-11-24: the inline tag triggers the accent"
       }
-    }
+    },
+    "draft": "4: Dad's car planted (parking bay, engine sound, one light)"
   }
 }
