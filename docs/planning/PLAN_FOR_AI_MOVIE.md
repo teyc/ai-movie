@@ -898,6 +898,44 @@ apply cleanly.
 | G7 | GPT | Durable source-media store and an offline restore check | important | agree | 5.3 |
 | M1 | microdrama repo (`manju-laoli-skill`) | Numeric tension curve, transition (seam) vocabulary, and stop-and-ask front-end locks adopted into the skills; deeper rules queued for analysis | — | partly | `skills/`; see the analysis bead |
 
+### Bead review (GPT-6.2 Astra, 2026-11-24)
+
+A fresh model reviewed the open beads after polish pass 1
+(`refinements/BEAD_REVIEW_GPT-6.2-Astra.md`): 29 findings, 9 high, 17 medium,
+3 low. Ratings and what changed:
+
+| # | Finding | Rating | Change |
+|---|---|---|---|
+| 1.1 | Pilot cut anchors: sh3 has a null frame, sh1 starts before its cue | Agree | am-mcd.2 sets picture anchors on the take; am-mcd.4 starts at frame 0 and runs without gaps |
+| 1.2 | am-00y.11 said the mannequin has "no clothed form" | Agree (my error) | Fixed: the mannequin is the clothed form; the character layer adds garment details |
+| 1.3 | Rights list says "all owned" but CC0 effects are allowed | Agree | am-mcd.5 separates owned from CC0, with evidence |
+| 1.4 | 30–45 s platform length versus a 60–90 s phase B film | Agree | Q4 no longer sets length; length is per film |
+| 1.5 | Schema task depends on a plan-only v2 example; anchor fields differ | Agree | Standalone v2 fixture; typed speech and picture anchors; timed-voice record |
+| 1.6 | Spend ledger: lost acknowledgement versus "resumes by polling" | Agree | Separate restart outcomes |
+| 1.7 | Dialogue milestone labelled phase E, plan says D | Agree | am-mcd.11 is phase D |
+| 2.1 | Layer manifest defined downstream of the boards that need it | Agree (my error) | New am-e-asm-qgh.6 defines it first |
+| 2.2 | Screening could play the static rough cut | Agree | Packaging waits on the drift; screening uses the package by digest |
+| 2.3 | Car setup must prove a playback that waits on it | Agree | am-mcd.15 is the specification only; playback is checked in am-mcd.4 and am-mcd.6 |
+| 2.4 | Human read still pulls in TTS through captions and the animatic | Agree | Both consume the timed-voice record; TTS only when synthesised |
+| 2.5 | Phase B can pass without the reusable exporter | Agree | am-mcd.13 needs one moving shot from am-00y.12 |
+| 2.6 | Review sheet promises flags before the checks exist | Partly | A common flag format in the sheet; no gating on the checks, which are phase C |
+| 2.7 | Restore check ready before there is anything to restore | Agree | Waits on the compiler and the parallax |
+| 2.8 | Route experiment waits on the decision it informs | Agree | Candidates first; the decision follows the verdict; structural control is conditional |
+| 3.1 | Three beads can edit the same child-peek scenes | Agree | Props: standalone fixtures; am-mcd.15: shot spec; am-mcd.3: scene placement |
+| 3.2 | Screen-direction check in two beads | Agree | Only am-00y.5 |
+| 3.3 | Library, mix and assembly all claim placement or ducking | Agree | Library resolves, mix places and ducks into stems, assembly consumes stems |
+| 4.1 | "Both phase B cuts" unspecified | Agree | Named fixture, loudness and peak measured, take swap tested |
+| 4.2 | Zero-offset flatten can't find missing background | Agree | Displaced-foreground test |
+| 4.3 | Animatic approval ignores voice, caption and timing changes | Agree | Approval pins them too |
+| 4.4 | Defect flagger precision measured only on bad stills | Agree | Good and bad stills, targets set first |
+| 4.5 | Capability-check acceptance depends on props being missing | Agree | Fixed fixture |
+| 4.6 | Audition can pass with a comment | Agree | Full record required |
+| 5.1 | sh3 must-see still says plural headlights | Agree | Reconciled in am-mcd.15 |
+| 5.2 | Phase B has no sound plan or sensory-claim trace | Partly | Added to am-mcd.13 as a manual trace; a machine check waits for a second escape (AGENTS.md loop, step 3) |
+| 5.3 | No repeatable phone review in phase A | Agree | New am-mcd.17 review record |
+| 6.1 | Hands spike can put image generation on the phase B path | Agree | Phase B always ships the drawn version; a model route goes to phase E |
+| 6.2 | Generation branch metadata says phases B–D | Agree | Epic P4 and deferred; children labelled phase E only |
+
 ## Appendix A. Deferred material (phase E: generation and post)
 
 Kept for the later phase. Not reviewed in refinement rounds and not built until the storyboard film works (section 1.1).
