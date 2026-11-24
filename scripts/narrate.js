@@ -3,8 +3,11 @@
 // Narration for a storyboard film: Gemini TTS per spoken line, Gemini transcription for
 // word timings, then offline assembly of the chosen takes into a timed voice track.
 //
-//   node scripts/narrate.js generate <project-dir> [--takes 2] [--voice Algenib] [--max-requests 20] [--dry-run]
-//   node scripts/narrate.js assemble <project-dir> [--pick b1=1,b2=2,...]
+//   node scripts/narrate.js generate <project-dir> [--takes 2] [--voice Algenib] [--max-requests 20] [--dry-run] [--force]
+//   node scripts/narrate.js assemble <project-dir> [--pick b1=1,b2=2,...] [--allow-mismatch b1,b4]
+//
+// Existing takes are kept: generate skips them (so a failed run resumes) unless --force.
+// Hand-corrected cue marks live in <project-dir>/voice-marks.json, tied to a take's digest.
 //
 // The API key is read from GEMINI_API_KEY or GEMINI_VIDEO_API_KEY and is never written anywhere.
 // Outputs go to runs/<project-id>/voice/ (ignored by git).
@@ -15,21 +18,33 @@ const crypto = require('crypto');
 
 const API = 'https://generativelanguage.googleapis.com/v1beta/models/';
 const OUT_RATE = 48000;
+const REPO = path.resolve(__dirname, '..');
+const TIMEOUT_MS = 90000;
 
 // ---------------------------------------------------------------- arguments
 function parseArgs(argv) {
   const [cmd, dir, ...rest] = argv;
-  const o = { cmd, dir, takes: 2, maxRequests: 20, dryRun: false, pick: {},
+  const o = { cmd, dir, takes: 2, maxRequests: 20, dryRun: false, force: false, pick: {}, allowMismatch: new Set(),
     ttsModel: 'gemini-3.8-flash-tts', sttModel: 'gemini-3.5-transcribe', voice: null };
+  const posInt = (name, v) => {
+    if (!/^[1-9][0-9]*$/.test(String(v))) throw new Error(`${name} needs a positive whole number, got "${v}"`);
+    return +v;
+  };
+  const need = (a, v) => { if (v === undefined || String(v).startsWith('--')) throw new Error(`${a} needs a value`); return v; };
   for (let i = 0; i < rest.length; i++) {
     const a = rest[i], v = rest[i + 1];
-    if (a === '--takes') { o.takes = +v; i++; }
-    else if (a === '--voice') { o.voice = v; i++; }
-    else if (a === '--max-requests') { o.maxRequests = +v; i++; }
-    else if (a === '--tts-model') { o.ttsModel = v; i++; }
-    else if (a === '--stt-model') { o.sttModel = v; i++; }
+    if (a === '--takes') { o.takes = posInt(a, need(a, v)); i++; }
+    else if (a === '--voice') { o.voice = need(a, v); i++; }
+    else if (a === '--max-requests') { o.maxRequests = posInt(a, need(a, v)); i++; }
+    else if (a === '--tts-model') { o.ttsModel = need(a, v); i++; }
+    else if (a === '--stt-model') { o.sttModel = need(a, v); i++; }
     else if (a === '--dry-run') o.dryRun = true;
-    else if (a === '--pick') { for (const kv of v.split(',')) { const [b, t] = kv.split('='); o.pick[b] = +t; } i++; }
+    else if (a === '--force') o.force = true;
+    else if (a === '--pick') {
+      for (const kv of need(a, v).split(',')) { const [b, t] = kv.split('='); if (!b) throw new Error('bad --pick ' + kv); o.pick[b] = posInt('--pick ' + b, t); }
+      i++;
+    }
+    else if (a === '--allow-mismatch') { for (const b of need(a, v).split(',')) o.allowMismatch.add(b); i++; }
     else throw new Error('unknown option ' + a);
   }
   if (!['generate', 'assemble'].includes(cmd) || !dir) {
@@ -51,10 +66,12 @@ function loadProject(dir) {
     shotStart[s.id] = t; t += s.seconds;
     if (!(s.beat in shotOfBeat)) shotOfBeat[s.beat] = s.id;
     if (s.anchor && s.anchor.kind === 'speech' && s.id !== first) anchorOf[s.id] = s.anchor;
+    // The first shot starts at frame 0, so its speech anchor (if any) can't move a cut; its line uses startAt.
   }
   const total = t;
   const lines = [];
   for (const sc of sp.payload.scenes) for (const b of sc.beats) {
+    if ((b.spoken || []).length > 1) throw new Error(`beat ${b.id} has ${b.spoken.length} spoken lines; narrate.js supports one per beat (split the beat)`);
     for (const sk of b.spoken || []) {
       const d = sk.delivery || {};
       const shot = shotOfBeat[b.id];
@@ -112,10 +129,13 @@ function sttRequest(wavBuf, lang) {
   };
 }
 
+const budget = { used: 0, max: Infinity };
 async function call(model, body, key) {
+  if (budget.used >= budget.max) throw new Error(`request cap of ${budget.max} reached; nothing more was sent`);
+  budget.used++;
   const r = await fetch(API + model + ':generateContent', {
     method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
-    body: JSON.stringify(body) });
+    body: JSON.stringify(body), signal: AbortSignal.timeout(TIMEOUT_MS) });
   const txt = await r.text();
   if (!r.ok) throw new Error(`${model} HTTP ${r.status}: ${txt.slice(0, 500)}`);
   return JSON.parse(txt);
@@ -137,8 +157,16 @@ function readWav(buf) {
   let off = 12, rate = 24000, bits = 16, ch = 1, data = null;
   while (off + 8 <= buf.length) {
     const id = buf.slice(off, off + 4).toString('ascii'), size = buf.readUInt32LE(off + 4);
-    if (id === 'fmt ') { ch = buf.readUInt16LE(off + 10); rate = buf.readUInt32LE(off + 12); bits = buf.readUInt16LE(off + 22); }
-    if (id === 'data') { data = buf.slice(off + 8, off + 8 + size); break; }
+    if (id === 'fmt ') {
+      const fmt = buf.readUInt16LE(off + 8);
+      if (fmt !== 1 && fmt !== 0xfffe) throw new Error(`WAV format ${fmt} is not integer PCM`);
+      ch = buf.readUInt16LE(off + 10); rate = buf.readUInt32LE(off + 12); bits = buf.readUInt16LE(off + 22);
+    }
+    if (id === 'data') {
+      const end = Math.min(off + 8 + size, buf.length);
+      data = buf.slice(off + 8, end - ((end - off - 8) % 2));
+      break;
+    }
     off += 8 + size + (size % 2);
   }
   if (!data || bits !== 16) throw new Error('expected 16-bit PCM WAV');
@@ -176,10 +204,30 @@ function wordsFromResponse(resp) {
   const p = parts.find(x => x.audioTranscription);
   if (!p) throw new Error('no audioTranscription in response');
   const sec = s => parseFloat(String(s).replace(/s$/, ''));
-  return p.audioTranscription.words.map(w => ({ word: w.word, start: sec(w.startOffset), end: w.endOffset != null ? sec(w.endOffset) : null }));
+  const ws = p.audioTranscription.words || [];
+  return ws.map((w, i) => {
+    const start = sec(w.startOffset);
+    if (!Number.isFinite(start)) throw new Error(`word ${i} ("${w.word}") has no usable startOffset`);
+    return { word: w.word, start, end: w.endOffset != null ? sec(w.endOffset) : null };
+  });
 }
 
 const norm = w => w.toLowerCase().replace(/[^a-z0-9']/g, '');
+
+// Number words and clock words a transcriber may render as digits ("six o'clock" -> "6:00").
+const NUMBERY = new Set(('zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen ' +
+  "fifteen sixteen seventeen eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand o'clock half quarter").split(' '));
+
+// Compare the line's script with the words heard. Numbers are compared loosely (any run of
+// number words matches any run of digit tokens); every other word must match in order.
+function compareHeard(script, words) {
+  const strip = toks => toks.map(norm).filter(Boolean);
+  const want = strip(script.split(/\s+/)), got = strip(words.map(w => w.word));
+  const squash = (toks, isNum) => { const out = []; for (const t of toks) { if (isNum(t)) { if (out[out.length - 1] !== '#') out.push('#'); } else out.push(t); } return out; };
+  const a = squash(want, t => NUMBERY.has(t)), b = squash(got, t => /[0-9]/.test(t));
+  const ok = a.length === b.length && a.every((t, i) => t === b[i]);
+  return { ok, expected: want.join(' '), heard: got.join(' ') };
+}
 
 // Find each cue word's occurrence in a take's words; returns {cueId: wordIndex}.
 function findCues(words, cues) {
@@ -204,6 +252,7 @@ async function generate(o, proj, outDir) {
   const planned = proj.lines.length * o.takes * 2;
   console.log(`${proj.lines.length} lines x ${o.takes} takes, voice ${voice}: ${planned} requests (cap ${o.maxRequests})`);
   if (planned > o.maxRequests) throw new Error('over the request cap; raise --max-requests or lower --takes');
+  budget.max = o.maxRequests;
   if (o.dryRun) {
     for (const l of proj.lines) {
       const r = ttsRequest(l, proj.vd, voice);
@@ -216,19 +265,26 @@ async function generate(o, proj, outDir) {
   for (const l of proj.lines) {
     for (let t = 1; t <= o.takes; t++) {
       const base = path.join(outDir, `${l.beat}-take${t}`);
+      if (!o.force && fs.existsSync(base + '.json') && fs.existsSync(base + '.wav')) {
+        console.log(`${l.beat} take ${t}: exists, skipped (use --force to replace it)`);
+        continue;
+      }
       const req = ttsRequest(l, proj.vd, voice);
       const a = audioFromResponse(await call(o.ttsModel, req, key));
       const wav = writeWav(a.samples, a.rate);
       fs.writeFileSync(base + '.wav', wav);
       const words = wordsFromResponse(await call(o.sttModel, sttRequest(wav, lang), key));
-      const meta = { beat: l.beat, take: t, text: l.text, sentText: req.contents[0].parts[0].text,
+      const cmp = compareHeard(l.text, words);
+      let cuesFound = true; try { findCues(words, l.cues); } catch (e) { cuesFound = false; }
+      const meta = { heardMatches: cmp.ok, cuesFound, beat: l.beat, take: t, text: l.text, sentText: req.contents[0].parts[0].text,
         style: req.contents[0].parts[0].speech_metadata.style, voice, ttsModel: o.ttsModel, sttModel: o.sttModel,
         rate: a.rate, seconds: a.samples.length / a.rate, digest: sha(wav), words, date: new Date().toISOString() };
       fs.writeFileSync(base + '.json', JSON.stringify(meta, null, 2) + '\n');
-      console.log(`${l.beat} take ${t}: ${meta.seconds.toFixed(2)} s, heard "${words.map(w => w.word).join(' ')}"`);
+      console.log(`${l.beat} take ${t}: ${meta.seconds.toFixed(2)} s, heard "${words.map(w => w.word).join(' ')}"` +
+        (cmp.ok ? '' : `  <-- DOESN'T MATCH THE SCRIPT ("${cmp.expected}")`) + (cuesFound ? '' : '  <-- CUE WORD NOT HEARD'));
     }
   }
-  console.log(`\nListen to ${outDir}/*.wav, then run: node scripts/narrate.js assemble ${o.dir} --pick b1=1,b2=1,...`);
+  console.log(`\n${budget.used} requests sent. Listen to ${outDir}/*.wav, then run: node scripts/narrate.js assemble ${o.dir} --pick b1=1,b2=1,...`);
 }
 
 // Voice-first layout. Walk the shots in order with a running cut time. A shot's line is placed
@@ -266,17 +322,44 @@ function layout(proj, takes) {
   return { cuts, placed, total: cut, notes };
 }
 
+// Hand-corrected cue marks: <project>/voice-marks.json
+//   {"marks": [{"cue": "car", "takeDigest": "sha256:...", "startInTake": 1.62, "by": "chui", "date": "..."}]}
+// A mark applies only to the exact take it was made on, so a pickup can't reuse stale marks.
+function loadMarks(dir) {
+  const f = path.join(dir, 'voice-marks.json');
+  return fs.existsSync(f) ? (JSON.parse(fs.readFileSync(f, 'utf8')).marks || []) : [];
+}
+function applyMarks(beat, take, cues, marks) {
+  const notes = [];
+  for (const m of marks) {
+    if (!cues.some(c => c.id === m.cue)) continue;
+    if (m.takeDigest !== take.digest) { notes.push(`mark for "${m.cue}" ignored: made on a different take`); continue; }
+    const idx = findCues(take.words, cues)[m.cue];
+    take.words = take.words.map((w, i) => i === idx ? { ...w, start: m.startInTake, marked: true } : w);
+    notes.push(`"${m.cue}" uses the hand mark at ${m.startInTake} s into ${beat}'s take`);
+  }
+  return notes;
+}
+
 function assemble(o, proj, outDir) {
-  const takes = {}, used = [];
+  const takes = {}, used = [], marks = loadMarks(o.dir);
   for (const l of proj.lines) {
+    if (!(l.beat in o.pick)) console.warn(`warning: no --pick for ${l.beat}; using take 1`);
     const t = o.pick[l.beat] || 1;
     const base = path.join(outDir, `${l.beat}-take${t}`);
     const meta = JSON.parse(fs.readFileSync(base + '.json', 'utf8'));
     const wavBuf = fs.readFileSync(base + '.wav');
     if (sha(wavBuf) !== meta.digest) throw new Error(`${base}.wav does not match its recorded digest`);
     const a = readWav(wavBuf);
+    const cmp = compareHeard(l.text, meta.words);
+    if (!cmp.ok && !o.allowMismatch.has(l.beat)) {
+      throw new Error(`${l.beat} take ${t}: heard "${cmp.heard}", script says "${cmp.expected}". Listen to it: if the audio is right ` +
+        `and only the transcript is wrong, re-run with --allow-mismatch ${l.beat}; otherwise pick another take.`);
+    }
+    if (!cmp.ok) console.log(`${l.beat}: transcript differs from the script ("${cmp.heard}"); accepted by --allow-mismatch`);
     takes[l.beat] = { ...meta, audio: resample(a.samples, a.rate, OUT_RATE), seconds: a.samples.length / a.rate };
-    used.push({ beat: l.beat, take: t, digest: meta.digest, voice: meta.voice, ttsModel: meta.ttsModel, style: meta.style, sentText: meta.sentText, date: meta.date });
+    for (const n of applyMarks(l.beat, takes[l.beat], l.cues, marks)) console.log(n);
+    used.push({ beat: l.beat, take: t, digest: meta.digest, voice: meta.voice, ttsModel: meta.ttsModel, sttModel: meta.sttModel, style: meta.style, sentText: meta.sentText, date: meta.date });
   }
   const lay = layout(proj, takes);
   for (const n of lay.notes) console.log(n);
@@ -301,11 +384,11 @@ function assemble(o, proj, outDir) {
   const timed = { kind: 'timed-voice', version: 1, id: proj.id, payload: {
     audio: 'voice.wav', digest, sampleRate: OUT_RATE, samples: total, fps: proj.fps, source: 'synthesised',
     words, phrases, cues, cuts,
-    note: 'Word offsets are in samples. Cuts are a voice-first layout for the edit; picture-anchored cuts (sh3) are set by the editor. Hand-check cue onsets before cutting.' } };
+    note: 'Word offsets are in samples. Transcript timestamps are coarse (about 0.1 s, so plus or minus 3 frames at 30 fps): hand-check cue onsets and record corrections in voice-marks.json. Cuts are a voice-first layout for the edit; picture-anchored cuts (sh3) are set by the editor.' } };
   fs.writeFileSync(path.join(outDir, 'timed-voice.json'), JSON.stringify(timed, null, 2) + '\n');
   const prov = { kind: 'asset-provenance', version: 1, id: proj.id + '-voice', payload: {
     asset: 'voice.wav', digest, role: 'narration', source: 'generated',
-    provider: 'Google Gemini API', terms: 'https://ai.google.dev/gemini-api/terms', takes: used,
+    provider: 'Google Gemini API', terms: 'https://ai.google.dev/gemini-api/terms', assembled: new Date().toISOString(), takes: used,
     publicUse: true, aiDisclosure: 'synthetic voice' } };
   fs.writeFileSync(path.join(outDir, 'provenance.json'), JSON.stringify(prov, null, 2) + '\n');
   console.log(`voice.wav: ${lay.total.toFixed(2)} s (planned ${proj.total} s) at ${OUT_RATE} Hz`);
@@ -316,7 +399,7 @@ function assemble(o, proj, outDir) {
 async function main() {
   const o = parseArgs(process.argv.slice(2));
   const proj = loadProject(o.dir);
-  const outDir = path.join('runs', proj.id, 'voice');
+  const outDir = path.join(REPO, 'runs', proj.id, 'voice');
   if (o.cmd === 'generate') await generate(o, proj, outDir);
   else assemble(o, proj, outDir);
 }
@@ -324,4 +407,4 @@ async function main() {
 if (require.main === module) main().catch(e => { console.error('error: ' + e.message); process.exit(1); });
 
 module.exports = { parseArgs, loadProject, ttsText, stylePrompt, ttsRequest, sttRequest, audioFromResponse,
-  readWav, writeWav, resample, wordsFromResponse, findCues, layout };
+  readWav, writeWav, resample, wordsFromResponse, findCues, layout, compareHeard, applyMarks };

@@ -81,3 +81,38 @@ test('voice-first layout: anchors place lines, crowded lines lengthen the earlie
   // shots never shrink below their planned length
   for (const x of lay.cuts) assert.ok(x.seconds >= x.planned);
 });
+
+test('script and heard words are compared, with numbers matched loosely', () => {
+  const w = s => s.split(' ').map((x, i) => ({ word: x, start: i * 0.3 }));
+  assert.strictEqual(n.compareHeard("Six o'clock. Mia keeps watch.", w('6:00. Mia keeps watch.')).ok, true);
+  assert.strictEqual(n.compareHeard('Not Dad.', w('Not dad.')).ok, true);
+  const bad = n.compareHeard('Not Dad.', w('Not that.'));
+  assert.strictEqual(bad.ok, false);
+  assert.strictEqual(bad.heard, 'not that');
+});
+
+test('arguments are validated, so junk cannot bypass the request cap', () => {
+  assert.throws(() => n.parseArgs(['generate', 'x', '--max-requests', 'abc']), /positive whole number/);
+  assert.throws(() => n.parseArgs(['generate', 'x', '--takes', '0']), /positive whole number/);
+  assert.throws(() => n.parseArgs(['generate', 'x', '--takes']), /needs a value/);
+  assert.deepStrictEqual([...n.parseArgs(['assemble', 'x', '--allow-mismatch', 'b1,b4']).allowMismatch], ['b1', 'b4']);
+});
+
+test('readWav rejects float audio and survives an odd-length data chunk', () => {
+  const wav = n.writeWav(new Int16Array([1, 2, 3]), 24000);
+  const f = Buffer.from(wav); f.writeUInt16LE(3, 20);
+  assert.throws(() => n.readWav(f), /not integer PCM/);
+  const odd = Buffer.concat([wav, Buffer.from([7])]); odd.writeUInt32LE(7, 40);
+  assert.deepStrictEqual(Array.from(n.readWav(odd).samples), [1, 2, 3]);
+});
+
+test('hand marks apply only to the take they were made on', () => {
+  const take = { digest: 'sha256:aaa', words: [{ word: 'Not', start: 0.3 }, { word: 'Dad.', start: 0.6 }] };
+  const cues = [{ id: 'notdad', word: 'Not' }];
+  const stale = n.applyMarks('b4', { ...take }, cues, [{ cue: 'notdad', takeDigest: 'sha256:bbb', startInTake: 0.25 }]);
+  assert.match(stale[0], /different take/);
+  const t2 = { ...take };
+  n.applyMarks('b4', t2, cues, [{ cue: 'notdad', takeDigest: 'sha256:aaa', startInTake: 0.25 }]);
+  assert.strictEqual(t2.words[0].start, 0.25);
+  assert.strictEqual(take.words[0].start, 0.3, 'the original words are not mutated');
+});
