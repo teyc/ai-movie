@@ -1,7 +1,8 @@
 # AGENTS.md
 
-Operating manual for any coding agent working in this repository. Read it at
-the start of every session and again after every context compaction.
+Operating manual for any coding agent working in this repository. Read it,
+and `docs/LESSONS.md`, at the start of every session and again after every
+context compaction.
 
 ## Rules
 
@@ -22,6 +23,16 @@ the start of every session and again after every context compaction.
 8. **Plan first, then beads, then code.** The plan in
    `docs/planning/PLAN_FOR_AI_MOVIE.md` is the source of truth for intent.
    Work is tracked as beads; pick work with `br ready --json`.
+9. **Every change starts from a claimed bead.** That includes skills,
+   examples, docs and quick fixes. If no bead fits, create one, then claim it.
+   Close it with proof (a commit, a test, a render).
+10. **Beads stay self-contained.** When the plan changes, rewrite the affected
+    bead descriptions in place. Never append "update" notes underneath.
+11. **Never weaken the process to get work through.** You may add rules,
+    checks, tests and lessons. You may not delete or loosen a test, check or
+    rule, raise a tolerance, or mark expected output as acceptable just to
+    make something pass, without the human's agreement. Changes to this Rules
+    section need the human.
 
 ## Project
 
@@ -35,6 +46,7 @@ video model is involved. See `README.md` for the stage table and
 | `lib/pose/` | Storyboard mannequin: model, renderer, profiles, CLI. Format documented in its README |
 | `resource/pose/` | Reference scene records (`.json`) with renders (`.png`) |
 | `docs/planning/` | Plan documents |
+| `docs/LESSONS.md` | Escapes not yet absorbed into a test, check or rule; read at session start |
 | `.beads/` | Task tracking (beads). `issues.jsonl` is committed; the database is not |
 | `skills/` | Pipeline skills (symlink to `.claude/skills` for Claude Code), used in order: `story-writer` → `screenplay` → `script-doctor` → `shot-list` → `sound-design` |
 | `examples/` | Worked examples of the pipeline; `examples/child-peek/` is the phase A micro-story |
@@ -81,9 +93,34 @@ These came from review of rendered frames. Do not undo them without asking.
   parent form rather than being drawn as separate ovals.
 - "Manga" in a request means extreme pose states, not manga styling.
 
+## Self-improvement loop
+
+Fixing a mistake is half the job; the other half is making the process catch
+it next time.
+
+1. **Trace every escape.** When the human, a reviewer or a later stage
+   catches a defect, name the step that should have caught it first: a
+   skill, a check, a test, a rule in this file, or a bead description. Fix
+   that step as well as the defect, in the same bead or a new one.
+2. **Log it.** Add one line to `docs/LESSONS.md`: date, what slipped, where it
+   should have been caught, and what changed (bead or commit). When a lesson
+   has been absorbed into a test, check or rule, remove its line, so the log
+   stays short and current.
+3. **Turn repeats into machine checks.** If the same kind of escape happens
+   twice, the fix is a test or validator check, not more prose.
+4. **Retro at landing.** Before committing, answer three questions: What did
+   the human correct? What surprised me? What would I do differently? Each
+   answer becomes a lesson, a bead, or nothing.
+5. **Meta-review.** At each phase exit, or every 10 closed beads, a model that
+   hasn't worked on the repo reviews this file, `skills/` and
+   `docs/LESSONS.md` for drift, contradictions and rules nobody follows
+   (`docs/planning/refinements/BEAD_REVIEW_PROMPT.md` is the bead version).
+   Findings come to the human as proposals.
+
 ## Landing a session
 
-1. File beads for any remaining or discovered work.
+1. File beads for any remaining or discovered work, and do the retro
+   (self-improvement loop, step 4).
 2. Run the checks.
 3. Update bead status (`br close <id> --reason "..."`).
 4. `br sync --flush-only`, then stage `.beads/` with the code.
@@ -94,7 +131,8 @@ These came from review of rendered frames. Do not undo them without asking.
 ## Tools
 
 - **br** (beads_rust): issue tracker. Start with `br ready --json`; claim with
-  `br update <id> --claim --actor "$AGENT_NAME"`; finish with
+  `br update <id> --claim --actor "$AGENT_NAME"` (atomic: sets the assignee and
+  `in_progress`); finish with
   `br close <id> --reason "Completed: <proof>"`. Set `RUST_LOG=error`.
 - **bv** (beads viewer, installed on the human's Mac as `bvr`): use only its
   `--robot-*` flags.
@@ -132,7 +170,7 @@ br sync --status      # Check sync status
 ### Workflow Pattern
 
 1. **Start**: Run `br ready` to find actionable work
-2. **Claim**: Use `br update <id> --status=in_progress`
+2. **Claim**: Use `br update <id> --claim --actor "$AGENT_NAME"`
 3. **Work**: Implement the task
 4. **Complete**: Use `br close <id>`
 5. **Sync**: Always run `br sync --flush-only` at session end
