@@ -63,7 +63,7 @@ node lib/pose/cli.js render resource/pose/dash.json
 
 ## Status
 
-Early. Only the storyboard step exists, as a prototype. The plan is at draft 1, and work is tracked as beads: run `br ready` to see what can be picked up now.
+Early. Only the storyboard step exists, as a prototype. The plan is at draft 2, merged from three independent plans (Claude, GPT and Grok, all in `docs/planning/`). Work is tracked as beads: run `br ready` to see what can be picked up now. Phase A, a first 15 to 20 second film made from the existing ladder renders with no paid service, can start immediately.
 
 ## Acknowledgements
 
