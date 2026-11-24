@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Plan for ai-movie</title>
+</head>
+<body>
+<h1>Plan for ai-movie</h1>
+
+<h2>1. Summary</h2>
+<p>Build a file-driven pipeline that starts from a topic, produces a narrated explainer (or hybrid short drama) script, expands it into a shot list, turns every shot into a precise programmatic scene record, renders a hand-sketched storyboard SVG that already encodes camera, pose, gaze, props and simple environment, then uses that SVG (or a derived ControlNet-ready depth/pose map) as the composition lock for an image model and finally an image-to-video model. Human gates sit only at script, storyboard approval and final cut. Everything else is unattended, idempotent and re-runnable from the project folder. The three decisions that matter most are: (1) treat the storyboard SVG as the authoritative composition contract and feed it as a first-frame or strong ControlNet reference rather than relying on text alone; (2) ship first as short vertical explainers (30–60 s) on YouTube Shorts / TikTok / Reels because the economics and approval loop are tighter and character consistency is deliberately not required; (3) keep the storyboard renderer in pure Node with zero runtime dependencies so agents and humans can both drive it deterministically.</p>
+
+<h2>2. Where I disagree with the decisions or the core bet</h2>
+<p><strong>Core bet is largely correct but incomplete.</strong> Text prompts are indeed a weak way to lock camera height, foreshortening, gaze and relative scale. Programmatic composition first is the right move. However, the bet under-weights how good modern image-to-video models have become at respecting a strong first frame (Seedance 2.5, Kling 4.0, Wan 3.0, MiniMax H3 and FLUX 3 variants all treat a well-composed still as near-sacred). The pipeline should therefore optimise the storyboard → still → video path more than pure text-to-video. Pure text-to-video remains a fallback for abstract B-roll only.</p>
+<p><strong>Character consistency not required.</strong> I agree for the first product (faceless explainer). For short character drama later it becomes a liability; the architecture should leave a clean hook for reference-image sets and identity locks without forcing them now.</p>
+<p><strong>Hand-sketched look must be preserved but not romanticised.</strong> The SVG mannequin is a control signal, not the final aesthetic. The generation stage should be able to render photoreal, graphic-novel, or clean 2.5-D styles from the same scene record. Treating the sketch itself as the final look limits platform appeal and makes lighting/environment work harder than necessary.</p>
+<p><strong>Three human approvals are correct in principle but the middle one (storyboard) should be cheaper.</strong> Approve a low-resolution contact sheet of all frames plus a one-line “what this shot must convey” rather than pixel-perfect SVGs every time. Agents can auto-reject frames that fail joint-range, interpenetration or camera-framing heuristics before the human ever sees them.</p>
+<p><strong>File-only stage communication is excellent</strong> and I would keep it religiously. It is the only way agents, humans and future replacements stay interchangeable.</p>
+
+<h2>3. Answers to the open questions</h2>
+
+<h3>1. Format: narrated explainer over visuals, or short character drama? Or both, and in what order?</h3>
+<p><strong>Recommendation:</strong> Start exclusively with narrated explainer (faceless or with generic silhouetted figures). Add short character drama as phase 3 once the composition → generation loop is reliable.</p>
+<p><strong>Reasoning:</strong> Explainers have lower creative risk, no need for identity consistency, cheaper per-second generation (can reuse B-roll styles), and clearer success metrics (watch time, retention). Drama requires reliable multi-figure interaction, consistent wardrobe/face across cuts, and better lip/gesture sync; those are still expensive failure modes in November 2026. Order: explainer first, then hybrid “explainer with one recurring illustrative character”, then pure short drama.</p>
+<p><strong>Alternatives:</strong> Pure drama from day one (higher risk, slower iteration). Dual-track (two parallel pipelines) — rejected because it doubles the hard problem of scene-record generation.</p>
+
+<h3>2. How should a storyboard frame drive generation: as a reference/control image fed to the model, or converted into a precise text shot description? Which current models support which route?</h3>
+<p><strong>Recommendation (November 2026, verify):</strong> Primary path = render SVG → convert to depth + OpenPose-style skeleton + optional Canny → feed as ControlNet / spatial condition into an image model to produce a high-quality still → feed that still as first frame (and optionally last frame or keyframe) into an image-to-video model. Secondary path = auto-generate a dense text shot description from the scene record and use it as the prompt (or as a parallel conditioning signal). Never rely on text alone for composition-critical shots.</p>
+<p><strong>Current support (verify):</strong></p>
+<ul>
+<li>Image models with strong ControlNet / spatial control (OpenPose, depth, lineart): still widely available via ComfyUI / fal / local (SDXL, Flux variants, Z-Image, etc.).</li>
+<li>Image-to-video that respects first frame tightly: Seedance 2.5 (ByteDance), Kling 4.0 (up to 10 keyframes), Wan 3.0, MiniMax H3 / Hailuo, FLUX 3 Max, Gemini Omni Flash family. Many accept additional reference images for style or identity.</li>
+<li>Pure text-to-video is usable for abstract or establishing shots but loses the composition lock the whole pipeline is built around.</li>
+</ul>
+<p><strong>Alternatives:</strong> Text-only (cheaper, less controllable). Direct video ControlNet (rare and less mature). IP-Adapter + pose (useful later for mild identity).</p>
+
+<h3>3. Text-to-speech provider that returns word-level timings</h3>
+<p><strong>Recommendation (November 2026, verify):</strong> Cartesia Sonic (strong word timestamps over SSE/WebSocket, 44 languages, good latency) or ElevenLabs (excellent quality, word timestamps available, broad language/voice library). Inworld also returns word + character timestamps and visemes. Prefer the one that gives clean JSON timestamps out of the box and has a stable Node SDK.</p>
+<p><strong>Reasoning:</strong> Word-level timings are non-negotiable for burn-in captions and for any future lip-sync or gesture emphasis. Quality and emotional range matter more than absolute cheapest price for a publishable product.</p>
+
+<h3>4. Target platforms, aspect ratios and lengths</h3>
+<p><strong>Recommendation:</strong> Primary: 9:16 vertical, 30–60 s (YouTube Shorts, TikTok, Instagram Reels). Secondary: 16:9 60–120 s for YouTube long-form once the pipeline is stable. Always produce both aspect ratios from the same scene records by changing only the camera frustum and framing rules.</p>
+<p><strong>Reasoning:</strong> Vertical short-form has the highest distribution leverage and the shortest feedback loop. Platforms require AI labels for realistic generated content (YouTube, TikTok, Meta — verify current wording); the pipeline must emit the label metadata and an on-screen disclosure option.</p>
+
+<h3>5. A realistic per-video budget, and how to keep within it</h3>
+<p><strong>Recommendation:</strong> Target $3–8 all-in for a 45 s explainer in the first year (script LLM + image stills + 4–8 video clips of 4–8 s + TTS + music + assembly). Stretch goal under $4 once caching and model selection mature.</p>
+<p><strong>How:</strong> (a) Generate one high-quality still per shot, then 4–6 s of video from it rather than long continuous generations. (b) Prefer mid-tier image-to-video models that still respect the first frame (Gemini Omni Flash / cheaper Seedance / Kling tiers when quality allows). (c) Aggressive caching of scene records, SVGs and approved stills. (d) Human approval before any video tokens are spent. (e) Local or cheap open models for non-critical B-roll. Prices move monthly — re-benchmark quarterly (verify).</p>
+
+<h3>6. Narration language handling</h3>
+<p><strong>Recommendation:</strong> Script and shot list authored in English first (largest model capability surface). TTS in the target language. For non-English, run a dedicated translation + cultural adaptation pass after the English script is approved, then re-time the voice. Captions always generated in the spoken language; optional secondary caption track in English. Scene records and camera language stay language-agnostic.</p>
+
+<h2>4. Architecture</h2>
+
+<h3>Modules</h3>
+<ul>
+<li><strong>orchestrator</strong> — thin Node/TypeScript CLI + simple state machine that walks the project folder, detects which stage files are missing or stale, and invokes the next agent or tool.</li>
+<li><strong>script</strong> — LLM agent that turns topic + constraints into structured script JSON.</li>
+<li><strong>shot-list</strong> — expands script into timed shots with camera intent and visual description.</li>
+<li><strong>scene-record</strong> — the hard core: natural-language shot → validated scene record JSON (figures, props, environment, lights, camera).</li>
+<li><strong>storyboard-renderer</strong> — existing pure-Node SVG renderer, extended.</li>
+<li><strong>still-gen</strong> — SVG/depth/pose → image model → approved still.</li>
+<li><strong>video-gen</strong> — still (+ optional motion prompt) → image-to-video clips.</li>
+<li><strong>voice</strong> — TTS with word timings + caption generation.</li>
+<li><strong>music / sfx</strong> — lightweight library or generative bed + simple ducking.</li>
+<li><strong>assembly</strong> — FFmpeg-based timeline that consumes clips, audio, captions, produces final masters + platform variants.</li>
+<li><strong>publish</strong> — metadata, AI labels, thumbnails, optional auto-upload hooks.</li>
+</ul>
+
+<h3>Project folder layout</h3>
+<pre><code>projects/
+  &lt;project-id&gt;/
+    topic.md
+    script.json                  # approved
+    shotlist.json
+    scenes/
+      001.json                  # scene record
+      001.svg
+      001.depth.png
+      001.pose.png
+      001.still.png             # approved
+      001.video.mp4
+      ...
+    voice/
+      narration.wav
+      timings.json
+      captions.srt / .vtt
+    music/
+      bed.wav
+    assembly/
+      timeline.json
+      master-9x16.mp4
+      master-16x9.mp4
+    meta/
+      approvals.json
+      costs.json
+      run-log.jsonl
+</code></pre>
+
+<h3>Data contracts (example JSON)</h3>
+
+<p><strong>script.json</strong></p>
+<pre><code>{
+  "title": "Why panelised framing is winning in Brisbane",
+  "logline": "...",
+  "target_duration_s": 45,
+  "aspect_primary": "9:16",
+  "style": "clean explainer, warm daylight, graphic accents",
+  "sections": [
+    {
+      "id": "hook",
+      "narration": "Most new houses in Brisbane still start as sticks...",
+      "visual_intent": "wide establishing of a traditional site vs panelised stack"
+    }
+  ],
+  "language": "en",
+  "approved": true,
+  "approved_at": "2026-11-24T03:12:00Z"
+}
+</code></pre>
+
+<p><strong>shotlist.json (excerpt)</strong></p>
+<pre><code>{
+  "shots": [
+    {
+      "id": "001",
+      "section": "hook",
+      "duration_s": 4.2,
+      "narration_slice": "Most new houses in Brisbane still start as sticks...",
+      "camera": {
+        "framing": "wide",
+        "height": "eye",
+        "movement": "slow push-in",
+        "lens_feel": "35mm"
+      },
+      "description": "Split composition: left traditional stick-built frame under construction, right neat stack of prefabricated wall panels on a truck. Golden hour, slight haze.",
+      "figures": ["worker_pointing"],
+      "environment": "suburban_brisbane_site"
+    }
+  ]
+}
+</code></pre>
+
+<p><strong>scene record (grown version)</strong></p>
+<pre><code>{
+  "id": "001",
+  "seed": 42,
+  "camera": {
+    "position": [4.2, 1.6, 8.0],
+    "look_at": [0, 1.4, 0],
+    "zoom": 1.0,
+    "roll": 0,
+    "focal_length_mm": 35
+  },
+  "lights": [
+    { "type": "sun", "direction": [-0.4, -0.7, -0.3], "intensity": 1.0, "color": "#fff4e0" },
+    { "type": "fill", "position": [2, 2, 3], "intensity": 0.35 }
+  ],
+  "environment": {
+    "type": "open_site",
+    "ground": "dirt_gravel",
+    "sky": "clear_golden",
+    "buildings": [
+      { "type": "cuboid", "pos": [-6, 0, -4], "size": [8, 4, 6], "style": "incomplete_frame" }
+    ],
+    "props": [
+      { "type": "panel_stack", "pos": [2.5, 0, 1], "count": 6, "height": 2.4 }
+    ]
+  },
+  "figures": [
+    {
+      "id": "worker",
+      "profile": "adult_male",
+      "pose": { /* joint angles or named pose + deltas */ },
+      "gaze": [2.5, 1.8, 1],
+      "reach": { "right_hand": [2.2, 1.5, 1.1] },
+      "hands": { "right": "point", "left": "open" },
+      "clothing": "hi_vis_simple",
+      "position": [-1.2, 0, 2.5]
+    }
+  ],
+  "render_hints": {
+    "style": "clean_graphic",
+    "line_weight": "medium",
+    "shadow": "soft_contact"
+  },
+  "warnings": [],
+  "version": 3
+}
+</code></pre>
+
+<p>The scene record is the single source of truth that both the SVG renderer and the still-generation stage consume. Environments start as simple cuboids + named presets; lighting is directional + fill; multiple figures are first-class.</p>
+
+<h2>5. Each stage in detail</h2>
+
+<h3>Script</h3>
+<p><strong>Inputs:</strong> topic.md, constraints (duration, tone, platform, must-include facts).<br>
+<strong>Outputs:</strong> script.json.<br>
+<strong>How:</strong> Structured LLM call with few-shot examples of good short explainers. Enforce section timing budgets and a single clear hook in the first 3 s.<br>
+<strong>Failure modes:</strong> vague visuals, over-long narration, missing CTA. Retry with tighter length constraint + “show don’t tell” reminder.<br>
+<strong>Cost:</strong> cents.<br>
+<strong>Acceptance:</strong> human reads it aloud against a timer; every section has a concrete visual intent.</p>
+
+<h3>Shot list</h3>
+<p><strong>Inputs:</strong> approved script.json.<br>
+<strong>Outputs:</strong> shotlist.json.<br>
+<strong>How:</strong> LLM expands each section into 1–4 shots, assigns rough durations that sum to target, proposes camera language and figure count. Deterministic post-pass normalises IDs and timing.<br>
+<strong>Failure modes:</strong> too many cuts, impossible camera moves, narration/visual mismatch. Auto-flag shots whose description cannot be realised with current renderer capabilities.<br>
+<strong>Cost:</strong> low.<br>
+<strong>Acceptance:</strong> total duration within 10 % of target; every shot has a one-sentence “must convey”.</p>
+
+<h3>Storyboard / scene-record generation (the hard stage)</h3>
+<p>Covered in section 6. Output is scenes/*.json + *.svg. Human approves a contact sheet.</p>
+
+<h3>Generation (still then video)</h3>
+<p><strong>Inputs:</strong> approved scene records + SVGs.<br>
+<strong>Outputs:</strong> stills and short video clips.<br>
+<strong>How:</strong> (1) SVG → depth + pose maps (or direct raster). (2) Image model conditioned on those maps + style prompt derived from script. (3) Human or vision-model triage of stills. (4) Image-to-video from approved still + short motion prompt extracted from camera + figure intent. Prefer 4–6 s clips; extend only when necessary.<br>
+<strong>Failure modes:</strong> pose drift, extra limbs, ignored camera, style collapse. Retry with stronger ControlNet weight or different seed; fall back to text+first-frame only if spatial control fails.<br>
+<strong>Cost:</strong> dominant line item. Gate behind still approval.<br>
+<strong>Acceptance:</strong> still matches scene record composition on a simple overlay test; video keeps the same framing for the first 80 % of its length.</p>
+
+<h3>Voice and captions</h3>
+<p><strong>Inputs:</strong> script narration text + timings target.<br>
+<strong>Outputs:</strong> wav + word timings JSON + SRT/VTT.<br>
+<strong>How:</strong> TTS provider that returns word timestamps. Optional SSML/emotion tags from script. Captions generated directly from timings; style sheet for safe-area vertical video.<br>
+<strong>Failure modes:</strong> mispronunciation of technical terms, timing drift. Dictionary / IPA overrides; human listen pass only on final assembly if needed.<br>
+<strong>Cost:</strong> low–medium.<br>
+<strong>Acceptance:</strong> word error rate on a known script &lt; 1 %; captions never overflow safe area.</p>
+
+<h3>Music</h3>
+<p><strong>Inputs:</strong> mood tags from script, duration.<br>
+<strong>Outputs:</strong> bed track + simple volume automation.<br>
+<strong>How:</strong> curated library first (cheapest, most controllable); generative music only if no good match. Duck under narration via side-chain or pre-computed envelope.<br>
+<strong>Cost:</strong> near zero if library; low if generative.<br>
+<strong>Acceptance:</strong> no frequency clash with voice; energy matches section intent.</p>
+
+<h3>Assembly</h3>
+<p><strong>Inputs:</strong> all clips, voice, captions, music, timeline.json.<br>
+<strong>Outputs:</strong> master files in required aspect ratios + platform packages.<br>
+<strong>How:</strong> FFmpeg or Remotion-style renderer driven by declarative timeline. Handles transitions (hard cut default, optional dissolve), caption burn-in or soft subs, loudness normalisation, AI-label slate if required.<br>
+<strong>Failure modes:</strong> A/V sync drift, wrong aspect crop. Deterministic re-render from timeline.json; checksums on inputs.<br>
+<strong>Cost:</strong> compute only.<br>
+<strong>Acceptance:</strong> exact duration match, peak loudness within platform specs, captions legible on phone.</p>
+
+<h3>Publishing</h3>
+<p><strong>Inputs:</strong> masters + meta.<br>
+<strong>Outputs:</strong> uploaded assets or ready-to-upload folder + disclosure JSON.<br>
+<strong>How:</strong> generate titles, descriptions, chapters, hashtags; apply required AI disclosure labels; optional thumbnail from key still. Manual upload in v1; API hooks later.<br>
+<strong>Acceptance:</strong> checklist of platform requirements ticked.</p>
+
+<h2>6. The hardest problem: natural-language shot → valid scene record</h2>
+<p>This is the make-or-break stage. Treat it as a constrained code-generation + validation loop, not free-form creative writing.</p>
+<p><strong>Concrete method:</strong></p>
+<ol>
+<li><strong>Pose library first.</strong> Every shot description is matched (embedding + keyword) against the 18+ reference scenes. Start from the nearest named pose or a composition of two, then apply deltas for gaze, reach and body profile.</li>
+<li><strong>Structured extraction.</strong> LLM call with a strict JSON schema (figures[], camera, environment preset, props, lights). Few-shot on the existing hand-written scene records. Force the model to choose from the known profile and hand/pose vocabularies.</li>
+<li><strong>Renderer as oracle.</strong> Immediately run the scene record through the storyboard renderer. Collect every warning (joint clamp, unreachable target, extreme foreshortening, out-of-frame, interpenetration heuristic). Feed the warnings + the SVG back to the LLM in a correction turn: “These joints were clamped; adjust the pose or the reach target.”</li>
+<li><strong>Multi-figure &amp; environment.</strong> Start simple (one figure + cuboid props). Add a second figure only when the description requires interaction; use relative positioning constraints (“2 m to the left of figure A, facing her”). Environment starts as named presets (suburban_site, interior_office, balcony) that expand into cuboids + props.</li>
+<li><strong>Automatic quality gates before human.</strong>
+<ul>
+<li>All joints within limits (or explicitly marked acrobatic).</li>
+<li>Gaze target projects inside the frame or is intentionally off-screen.</li>
+<li>At least 60 % of each figure’s bounding box inside the camera frustum.</li>
+<li>No two solid props intersecting (simple AABB or capsule checks).</li>
+<li>Camera not inside geometry.</li>
+</ul>
+</li>
+<li><strong>Human judgement.</strong> Contact sheet of SVGs + the original shot description + the “must convey” line. Human can accept, reject, or edit the JSON directly (the renderer is fast). Accepted records become additional few-shot examples, closing the loop.</li>
+<li><strong>Judging quality.</strong> Automatic: the gates above + a cheap vision model that scores “does this SVG match the shot description?” on a 1–5 scale. Human: cinematic criteria (clear silhouette, readable action, intentional camera height, balanced negative space). Never let an automatic score fully replace the human gate at this stage.</li>
+</ol>
+
+<h2>7. Storyboard renderer roadmap</h2>
+<ol>
+<li><strong>Immediate (week 1–2):</strong> multi-figure support, basic interpenetration warnings, simple environment cuboids and ground plane, directional light + soft contact shadows, camera safe-area guides for 9:16 and 16:9. Deterministic tests for the 18 reference scenes.</li>
+<li><strong>Next:</strong> named environment presets that expand to geometry, prop library expansion (panels, tools, vehicles as simplified meshes), better hand shapes, clothing silhouettes that read at small size, export of depth and OpenPose-style skeleton images directly from the same scene record.</li>
+<li><strong>Then:</strong> simple animation curves between two scene records (for motion prompts or in-between stills), lighting intensity/colour temperature controls, occlusion ordering fixes.</li>
+<li><strong>Later:</strong> optional more sophisticated mannequin (muscle masses, better foreshortening) only if the ControlNet path still needs it; keep the core pure-Node and dependency-free.</li>
+</ol>
+<p>Order is driven by what unblocks the still-generation stage first.</p>
+
+<h2>8. Testing strategy</h2>
+<ul>
+<li><strong>Renderer:</strong> golden SVG files for every reference scene + a growing set of multi-figure and environment cases. Pixel or perceptual hash diff; any change requires explicit golden update. Joint-limit and IK unit tests independent of drawing.</li>
+<li><strong>Scene-record generation:</strong> hold-out set of shot descriptions with known-good records. Measure schema validity, warning count, and human accept rate. Regression: every previously accepted record must still round-trip through the renderer without new errors.</li>
+<li><strong>End-to-end:</strong> three fixed topics that produce a full video; cost, duration and human approval rate tracked. Snapshot the project folder after each stage for replay.</li>
+<li><strong>Visual:</strong> still vs scene-record overlay test (pose keypoints projected into the still must land near the mannequin joints). Video first-frame vs still SSIM or LPIPS threshold.</li>
+<li><strong>Non-visual:</strong> caption timing accuracy, loudness, aspect-ratio crops, presence of required AI disclosure metadata.</li>
+</ul>
+
+<h2>9. Phased delivery</h2>
+<p><strong>Phase 0 – smallest end-to-end (2–3 weeks):</strong> manual scene records for a 30 s explainer, existing renderer, one image model + one image-to-video model, Cartesia/ElevenLabs voice, FFmpeg assembly. Produces a real publishable vertical video. Proves the composition lock works.</p>
+<p><strong>Phase 1 – close the loop:</strong> automatic scene-record generation with renderer feedback, still approval gate, cost tracking, contact-sheet UI (even if CLI + browser).</p>
+<p><strong>Phase 2 – production hardening:</strong> multi-figure + environments, dual aspect ratio, music, robust retries, project-folder orchestrator, basic publish checklist.</p>
+<p><strong>Phase 3 – drama capability:</strong> identity reference sets, multi-shot character continuity helpers, longer timelines, optional lip-sync.</p>
+<p><strong>Phase 4 – scale:</strong> agent-only runs with higher auto-accept thresholds, model routing by budget/quality, analytics on retention vs composition metrics.</p>
+
+<h2>10. Risks and mitigations</h2>
+<ul>
+<li><strong>Scene-record quality plateaus:</strong> keep humans in the loop longer; invest in better few-shot and warning feedback; grow the pose library from every accepted frame.</li>
+<li><strong>Model price or quality shifts:</strong> abstract the still and video providers behind a thin interface; re-benchmark monthly; keep a local/open fallback path.</li>
+<li><strong>Platform AI-label and monetisation rules change:</strong> always emit disclosures; prefer styles that are clearly illustrative when rules tighten; monitor YouTube/TikTok/Meta policy pages.</li>
+<li><strong>Composition lock fails on video:</strong> fall back to stronger first-frame models or shorter clips; add keyframe support when available (Kling-style).</li>
+<li><strong>Cost blow-outs:</strong> hard budget per project; still approval before video spend; cache everything.</li>
+<li><strong>Agent non-determinism:</strong> scene records and renderer are deterministic; only creative LLM steps are stochastic and are always human-gated or auto-validated.</li>
+</ul>
+
+<h2>11. Work items (35 items)</h2>
+
+<ol>
+<li>
+<p><strong>Title:</strong> Project skeleton and folder contract<br>
+<strong>Description:</strong> Create the canonical per-project directory layout, a small JSON schema for approvals and costs, and a README that documents the file contracts between stages.<br>
+<strong>Acceptance criteria:</strong> New project command produces the full tree; every stage knows where to read/write.<br>
+<strong>Tests:</strong> Snapshot test of generated tree.<br>
+<strong>Depends on:</strong> none.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Extend scene-record schema for environments and lights<br>
+<strong>Description:</strong> Grow the existing scene record JSON to include environment presets, cuboid buildings, prop lists, and a simple lights array while remaining backward-compatible with current renderer input.<br>
+<strong>Acceptance criteria:</strong> Schema validates; old records still load.<br>
+<strong>Tests:</strong> JSON Schema tests + round-trip of 18 reference scenes.<br>
+<strong>Depends on:</strong> 1.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Multi-figure support in renderer<br>
+<strong>Description:</strong> Allow an array of figures in one scene record; draw them with correct depth ordering; detect simple interpenetration.<br>
+<strong>Acceptance criteria:</strong> Two-figure reference scenes render cleanly; warning emitted on overlap.<br>
+<strong>Tests:</strong> Golden SVGs for new multi-figure cases.<br>
+<strong>Depends on:</strong> 2.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Environment cuboids and ground plane<br>
+<strong>Description:</strong> Render simple box buildings, ground, and basic props from the environment section; respect camera.<br>
+<strong>Acceptance criteria:</strong> Suburban site and interior room presets look readableable in SVG.<br>
+<strong>Tests:</strong> Golden files + camera-frustum culling checks.<br>
+<strong>Depends on:</strong> 2.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Directional lighting and contact shadows<br>
+<strong>Description:</strong> Add sun + fill lights and soft elliptical contact shadows under figures and props.<br>
+<strong>Acceptance criteria:</strong> Shadows read directionality without cluttering the sketch look.<br>
+<strong>Tests:</strong> Visual regression on lit vs unlit versions of reference scenes.<br>
+<strong>Depends on:</strong> 4.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Depth and OpenPose export from renderer<br>
+<strong>Description:</strong> From the same scene record, emit a depth map and a coloured skeleton image suitable for ControlNet.<br>
+<strong>Acceptance criteria:</strong> Exported maps align with the SVG mannequin joints and depths.<br>
+<strong>Tests:</strong> Keypoint projection error &lt; threshold; depth ordering correct.<br>
+<strong>Depends on:</strong> 3, 4.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Renderer test harness and golden suite<br>
+<strong>Description:</strong> Formalise deterministic tests for all reference scenes plus new multi-figure and environment cases; CI-friendly.<br>
+<strong>Acceptance criteria:</strong> Any drawing change fails CI until goldens are intentionally updated.<br>
+<strong>Tests:</strong> The harness itself.<br>
+<strong>Depends on:</strong> 3–5.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Script agent<br>
+<strong>Description:</strong> LLM pipeline that turns topic + constraints into script.json with timed sections and visual intents.<br>
+<strong>Acceptance criteria:</strong> Three sample topics produce scripts that a human can approve with only minor edits.<br>
+<strong>Tests:</strong> Schema validation + length heuristics.<br>
+<strong>Depends on:</strong> 1.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Shot-list agent<br>
+<strong>Description:</strong> Expand approved script into shotlist.json with camera language and durations.<br>
+<strong>Acceptance criteria:</strong> Durations sum correctly; every shot has a concrete description.<br>
+<strong>Tests:</strong> Timing sum, required fields present.<br>
+<strong>Depends on:</strong> 8.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Pose-library matcher<br>
+<strong>Description:</strong> Embed and index the 18 reference scenes; given a shot description return the best starting pose(s) plus suggested deltas.<br>
+<strong>Acceptance criteria:</strong> Top-1 or top-3 contains a usable starting point for 80 % of a held-out description set.<br>
+<strong>Tests:</strong> Retrieval metrics on held-out set.<br>
+<strong>Depends on:</strong> existing pose library.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Scene-record generator (v1)<br>
+<strong>Description:</strong> Structured LLM call that emits a full scene record from a shot description, seeded by the pose matcher.<br>
+<strong>Acceptance criteria:</strong> Schema-valid records for the held-out set; renderer produces no hard errors on &gt;70 % of them.<br>
+<strong>Tests:</strong> Schema + renderer warning count.<br>
+<strong>Depends on:</strong> 2, 10.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Renderer-feedback correction loop<br>
+<strong>Description:</strong> After rendering, collect warnings and give the LLM one or two correction turns before giving up.<br>
+<strong>Acceptance criteria:</strong> Warning rate on first-pass records drops by at least half after correction.<br>
+<strong>Tests:</strong> Before/after warning statistics.<br>
+<strong>Depends on:</strong> 11, 7.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Automatic quality gates for scene records<br>
+<strong>Description:</strong> Implement frustum coverage, joint-limit, interpenetration and gaze checks; reject or flag before human review.<br>
+<strong>Acceptance criteria:</strong> Gates catch the obvious failures that previously reached humans.<br>
+<strong>Tests:</strong> Synthetic bad records are rejected.<br>
+<strong>Depends on:</strong> 3, 12.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Contact-sheet generator<br>
+<strong>Description:</strong> Produce a single image or HTML page of all SVGs with shot description and “must convey” for human approval.<br>
+<strong>Acceptance criteria:</strong> One glance shows composition problems.<br>
+<strong>Tests:</strong> Manual review of three projects.<br>
+<strong>Depends on:</strong> 7.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Still-generation stage<br>
+<strong>Description:</strong> Take approved SVG/depth/pose + style prompt, call image model, store still, optional auto-score.<br>
+<strong>Acceptance criteria:</strong> Still preserves pose and framing of the storyboard on overlay test.<br>
+<strong>Tests:</strong> Keypoint distance + human spot checks.<br>
+<strong>Depends on:</strong> 6, 14.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Image-to-video stage<br>
+<strong>Description:</strong> From approved still + short motion prompt, generate 4–8 s clip with chosen provider; support first-frame (and keyframe when available).<br>
+<strong>Acceptance criteria:</strong> First frame matches still; motion matches camera/figure intent without destroying composition.<br>
+<strong>Tests:</strong> First-frame similarity + short human review checklist.<br>
+<strong>Depends on:</strong> 15.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Provider abstraction for still and video<br>
+<strong>Description:</strong> Thin interface so Seedance, Kling, Wan, Gemini Omni, local ComfyUI etc. can be swapped by config.<br>
+<strong>Acceptance criteria:</strong> Two different backends produce usable output from the same scene record.<br>
+<strong>Tests:</strong> Integration tests against mock or real cheap endpoints.<br>
+<strong>Depends on:</strong> 15, 16.</p>
+</li>
+<li>
+<p><strong>Title:</strong> TTS + word timings integration<br>
+<strong>Description:</strong> Call Cartesia or ElevenLabs, persist audio and word-level JSON, generate SRT/VTT.<br>
+<strong>Acceptance criteria:</strong> Timings align with audio on inspection; captions render correctly.<br>
+<strong>Tests:</strong> Known script round-trip.<br>
+<strong>Depends on:</strong> 8.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Caption styling for vertical video<br>
+<strong>Description:</strong> Safe-area aware, high-contrast captions with optional keyword emphasis.<br>
+<strong>Acceptance criteria:</strong> Legible on a phone screen recording.<br>
+<strong>Tests:</strong> Visual check on 9:16 master.<br>
+<strong>Depends on:</strong> 18.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Music bed selection and ducking<br>
+<strong>Description:</strong> Simple library lookup by mood + FFmpeg side-chain or volume automation under narration.<br>
+<strong>Acceptance criteria:</strong> Voice remains clear; bed supports mood without distraction.<br>
+<strong>Tests:</strong> Loudness and subjective check.<br>
+<strong>Depends on:</strong> 18.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Timeline and assembly engine<br>
+<strong>Description:</strong> Declarative timeline.json → FFmpeg (or equivalent) that produces 9:16 and 16:9 masters with captions and audio mix.<br>
+<strong>Acceptance criteria:</strong> Bit-identical re-renders from the same inputs; platform loudness targets met.<br>
+<strong>Tests:</strong> Duration, sync, checksum tests.<br>
+<strong>Depends on:</strong> 16, 18, 20.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Cost and run-log tracking<br>
+<strong>Description:</strong> Every external call records tokens/seconds/price into costs.json and a JSONL run log.<br>
+<strong>Acceptance criteria:</strong> Per-video cost visible to within 10 % of actual invoice.<br>
+<strong>Tests:</strong> Synthetic calls accumulate correctly.<br>
+<strong>Depends on:</strong> 1.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Orchestrator CLI<br>
+<strong>Description:</strong> Single command that advances a project to the next incomplete stage, respecting approvals.<br>
+<strong>Acceptance criteria:</strong> Fresh project can be driven from topic to master with only the three human gates.<br>
+<strong>Tests:</strong> End-to-end dry run on a fixture project.<br>
+<strong>Depends on:</strong> most prior items.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Approval state machine<br>
+<strong>Description:</strong> Explicit approved/rejected/pending flags for script, storyboard set, and final master; orchestrator blocks accordingly.<br>
+<strong>Acceptance criteria:</strong> Cannot spend video tokens before storyboard approval.<br>
+<strong>Tests:</strong> State transition tests.<br>
+<strong>Depends on:</strong> 1, 14.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Phase-0 end-to-end fixture<br>
+<strong>Description:</strong> Hand-authored scene records + full pipeline run that produces one real 30–45 s vertical video.<br>
+<strong>Acceptance criteria:</strong> Video is publishable and demonstrates composition control.<br>
+<strong>Tests:</strong> The video itself + cost report.<br>
+<strong>Depends on:</strong> 21, 23.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Dual-aspect camera rules<br>
+<strong>Description:</strong> Same scene record can be framed for 9:16 and 16:9 by adjusting camera or crop guides.<br>
+<strong>Acceptance criteria:</strong> Both masters look intentionally composed, not letterboxed.<br>
+<strong>Tests:</strong> Visual check of both outputs from one record.<br>
+<strong>Depends on:</strong> 4, 21.</p>
+</li>
+<li>
+<p><strong>Title:</strong> AI disclosure metadata and slate<br>
+<strong>Description:</strong> Emit required platform labels and an optional on-screen disclosure.<br>
+<strong>Acceptance criteria:</strong> Meets current YouTube/TikTok/Meta rules (verify at implementation time).<br>
+<strong>Tests:</strong> Checklist against published policy pages.<br>
+<strong>Depends on:</strong> 21.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Thumbnail generator<br>
+<strong>Description:</strong> Select or composite a high-contrast still + short title treatment for each aspect ratio.<br>
+<strong>Acceptance criteria:</strong> Readable at small size; matches video content.<br>
+<strong>Tests:</strong> Manual review.<br>
+<strong>Depends on:</strong> 15.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Held-out evaluation set for scene records<br>
+<strong>Description:</strong> 30–50 diverse shot descriptions with human-validated target records; used for regression of the generator.<br>
+<strong>Acceptance criteria:</strong> Generator accept rate measurable and tracked over time.<br>
+<strong>Tests:</strong> The set itself.<br>
+<strong>Depends on:</strong> 11–13.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Vision-based still quality scorer<br>
+<strong>Description:</strong> Cheap model that scores still vs scene-record alignment and flags obvious defects before human review.<br>
+<strong>Acceptance criteria:</strong> High precision on known bad stills; low false-positive rate.<br>
+<strong>Tests:</strong> Labelled mini-set.<br>
+<strong>Depends on:</strong> 15.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Caching layer<br>
+<strong>Description:</strong> Content-addressed cache for SVGs, depth maps, stills and video clips so re-runs of unchanged stages cost nothing.<br>
+<strong>Acceptance criteria:</strong> Second run of an unchanged project spends $0 on generation.<br>
+<strong>Tests:</strong> Cache hit rate on fixture.<br>
+<strong>Depends on:</strong> 17, 22.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Simple web review UI (optional but high leverage)<br>
+<strong>Description:</strong> Local or lightweight hosted page that shows contact sheet, stills, and final video with approve/reject buttons that write the approval files.<br>
+<strong>Acceptance criteria:</strong> Non-engineers can perform the three gates without touching JSON.<br>
+<strong>Tests:</strong> Usability on a real project.<br>
+<strong>Depends on:</strong> 14, 24.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Model routing and budget guardrails<br>
+<strong>Description:</strong> Config that chooses cheaper models for B-roll and enforces a hard $ ceiling per project.<br>
+<strong>Acceptance criteria:</strong> Project aborts cleanly before exceeding budget.<br>
+<strong>Tests:</strong> Forced over-budget scenario.<br>
+<strong>Depends on:</strong> 17, 22.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Documentation of cinematic heuristics<br>
+<strong>Description:</strong> Short internal guide that translates common shot descriptions into camera height, lens feel and figure placement rules used by the scene-record agent.<br>
+<strong>Acceptance criteria:</strong> New contributors can predict what the agent will emit.<br>
+<strong>Tests:</strong> None (living doc).<br>
+<strong>Depends on:</strong> 11.</p>
+</li>
+<li>
+<p><strong>Title:</strong> Phase-1 retrospective and metrics dashboard<br>
+<strong>Description:</strong> After first 10 real videos, record accept rates, cost distribution, common failure modes and update the pose library and few-shot examples accordingly.<br>
+<strong>Acceptance criteria:</strong> Written report + updated few-shot set.<br>
+<strong>Tests:</strong> None.<br>
+<strong>Depends on:</strong> 25, 29.</p>
+</li>
+</ol>
+
+<p>This plan is deliberately opinionated toward composition control first, short vertical explainers first, and ruthless cost gating. The existing pure-Node renderer is a genuine advantage; treat it as the spine of the system rather than a temporary sketch tool.</p>
+
+</body>
+</html>
