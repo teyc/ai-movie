@@ -27,6 +27,11 @@ function fixtures() {
       });
     }
   }
+  // Test-only scenes (not reference poses): clean frames only.
+  const t = MANIFEST.testFrames || { folder: '', scenes: [] };
+  for (const name of t.scenes) {
+    out.push({ id: `test-${name}`, scene: name, render: () => pose.renderFrame(loadScene(t.folder, name), { seed }) });
+  }
   for (const s of MANIFEST.sheets) {
     out.push({
       id: s.name,

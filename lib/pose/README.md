@@ -66,7 +66,7 @@ Units are metres and degrees. Axes: `x` is the figure's left, `y` is up,
 | `camera.pos`, `camera.at` | Camera position and the point it looks at. The figure is scaled to fit the frame, so distance sets perspective, not size |
 | `camera.zoom` | Above 1 crops in |
 | `camera.verticalFovDeg` | Fixed camera: true perspective with this vertical field of view, centred on `at`. Without it the figure is auto-fitted to the frame |
-| `frame` | `{w, h}` in drawing units; default 320 x 200. Portrait 9:16 is `{w: 180, h: 320}` |
+| `frame` | `{w, h}` in drawing units; default 320 x 200. Portrait 9:16 is `{w: 180, h: 320}`. Everything but the sketched border is clipped to the frame rectangle (8 units in from the edge) |
 | `camera.rollDeg` | Tilts the camera |
 | `stand` | Shifts the figure so its lowest point rests on the ground. Do not combine with reach targets |
 | `ground` | Draws a short ground stroke under feet, hands or knees that touch the floor |

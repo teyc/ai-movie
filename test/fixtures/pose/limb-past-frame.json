@@ -1,0 +1,20 @@
+{
+  "name": "Limb past the frame",
+  "description": "Test fixture for frame clipping: zoomed in so the pointing arm and both legs cross the frame edge.",
+  "profile": "adult",
+  "camera": { "pos": [2.0, 1.3, 2.8], "at": [-0.2, 1.25, 0.2], "zoom": 1.9 },
+  "stand": true,
+  "ground": true,
+  "pose": {
+    "root": { "p": [0, 1, 0], "yaw": 0 },
+    "tho": [0, 0, 12],
+    "rSh": [88, 8, 0],
+    "rEl": 4,
+    "rHand": "open",
+    "lSh": [0, 8, 0],
+    "lEl": 12,
+    "lHip": [6, 0, 0],
+    "rHip": [-6, 0, 0],
+    "look": [-0.4, 1.45, 6]
+  }
+}

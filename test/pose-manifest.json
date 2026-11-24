@@ -12,6 +12,10 @@
       "three-point-landing": ["gaze short of target by 7 deg"]
     }
   },
+  "testFrames": {
+    "folder": "test/fixtures/pose",
+    "scenes": ["limb-past-frame"]
+  },
   "sheets": [
     { "name": "sheet", "folder": "resource/pose", "construction": false }
   ],
