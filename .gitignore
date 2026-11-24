@@ -3,3 +3,6 @@ resource/pose/*.svg
 node_modules/
 test/review/
 examples/**/*.svg
+.env
+.env.*
+runs/

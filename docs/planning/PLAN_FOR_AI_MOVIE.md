@@ -88,10 +88,10 @@ as question beads.
 |---|---|---|---|
 | Q1 | Format | Decided in part: a narrated story first (the child-peek micro-story, `examples/child-peek/`); the explainer workflow remains for briefs that pose a factual question. Open: narrator only, or dialogue too, for phase B | Human scope decision, round 3 |
 | Q2 | Generation model and route | Decide by experiment (Appendix A.5). Candidates: Runway Gen-4 Image for reference stills; Gen-4 Turbo, Kling 4.0, Seedance 2.5, Wan 3.0, MiniMax H3 or Gemini Omni Flash for image-to-video | verify (2026-11-24) |
-| Q3 | Text-to-speech with word timings | Pilot with a human recording or Polly. Choose between Amazon Polly (cheapest; word marks give start times, ends estimated) and Cartesia Sonic (word start and end times, 44 languages) after a two-sentence test | verify (2026-11-24) |
+| Q3 | Text-to-speech with word timings | **Decided (human, 2026-11-24):** Gemini TTS for narration, with Gemini transcription (`gemini-3.5-transcribe`, word timestamps) for timings, because Gemini TTS returns none. Each line is generated separately and placed by its reading notes. Paid calls are fine | Accent comes from the voice chosen, not the prompt: pick an Australian voice in the Gemini voice library or design one; verify (2026-11-24) |
 | Q4 | Platform, shape, length | YouTube Shorts first, 1080 x 1920, 30 fps, 30 to 45 seconds. Landscape 90 to 150 second explainers later | Shorts accept square or vertical up to 3 minutes; verify (2026-11-24) |
 | Q5 | Budget | About $2.50 cash per 36-second film at current rates; $5 hard ceiling per film; labour reported separately | Appendix A.1 |
-| Q6 | Language | Australian English (`en-AU`) first. Beats keep stable IDs so a translation can move cue words | GPT |
+| Q6 | Language | **Decided (human, 2026-11-24):** Australian English (`en-AU`); child-peek's narrator is a dry, deadpan Australian man. Beats keep stable IDs so a translation can move cue words | Human |
 
 Budget and the purchase record for paid generation are in Appendix A.1 (deferred).
 

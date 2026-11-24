@@ -52,6 +52,23 @@ blocking turns into boards.
    hard cut.
 9. **Write a blocking line for each shot**: where each character stands and
    faces in the set, so scene blocking does not have to guess.
+10. **Write performance notes for each character in the shot.** Blocking
+    says where; performance says how. Until faces exist, the posture *is*
+    the acting, so write what can be posed:
+    - `objective`: what the character wants in this shot, as a verb ("keep
+      watch", "be first to hear it").
+    - `attitude`: the inner state behind it (patient, eager, unguarded).
+    - `physical`: posture, weight, tension and gesture (on tiptoe, weight
+      forward, fingers tapping, shoulders up).
+    - `eyeline`: what they look at, by name and screen side.
+    - `timing`: when anything changes within the shot. A static board
+      holds one moment, so choose the moment that carries the beat; the cut
+      can be the movement.
+    - `fromPrevious`: how the body has changed since the last shot. Contrast
+      is how mannequins show feeling (stillness, then an explosion of
+      delight).
+    Gestures that make a sound go to sound-design as foley. Faces, once
+    character sheets have them, take a named expression from the notes.
 
 ## Choosing, quickly
 
@@ -88,6 +105,7 @@ Keep moves small; near layers move more than far ones.
     "mustSee": ["..."], "mayHide": ["..."],
     "transition": {"kind": "cut"},
     "blocking": "Mia at the rail centre, facing the street, corner to her left",
+    "performance": [{"who": "mia", "objective": "...", "attitude": "...", "physical": "...", "eyeline": "...", "timing": "...", "fromPrevious": "..."}],
     "startFrom": {"pose": "child-peek"}, "reason": "..."}]
 }}
 ```

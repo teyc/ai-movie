@@ -5,7 +5,6 @@
   "payload": {
     "story": "child-peek",
     "narration": "single-narrator",
-    "voice": "warm, unhurried, a smile in it",
     "revisedBy": "script-doctor, see doctor-notes.md",
     "scenes": [
       {
@@ -15,53 +14,199 @@
         "light": "Warm window light behind Mia; cool blue street; one streetlight on the corner",
         "beats": [
           {
-            "id": "b1", "structureBeat": "ki",
+            "id": "b1",
+            "structureBeat": "ki",
             "action": "From the street: a lit third-floor window, and in front of it a small figure on tiptoe at the balcony rail, chin just over the top. The streetlight on the corner flickers on.",
             "effect": "A quiet evening; this small person is waiting for something.",
-            "characters": ["mia"],
-            "spoken": [{ "speaker": "narrator", "text": "Six o'clock. Mia keeps watch." }],
-            "cues": [{ "id": "watch", "word": "watch", "occurrence": 1 }],
-            "targetSeconds": 4.5, "minScreenSeconds": 3
+            "characters": [
+              "mia"
+            ],
+            "spoken": [
+              {
+                "speaker": "narrator",
+                "text": "Six o'clock. Mia keeps watch.",
+                "delivery": {
+                  "marked": "(breath) Six o'clock. | Mia keeps watch. (breath)",
+                  "intent": "Matter-of-fact scene-setting, with quiet fondness for a nightly ritual",
+                  "emphasis": [
+                    "watch"
+                  ],
+                  "inflection": "Falling on both sentences; 'watch' settles but doesn't sound final",
+                  "pace": "Unhurried",
+                  "startAt": 0.8,
+                  "pauses": [
+                    {
+                      "after": "o'clock",
+                      "seconds": 0.5,
+                      "breath": false
+                    }
+                  ],
+                  "breaths": [
+                    "Before 'Six', silent",
+                    "After 'watch', in the gap before shot 2"
+                  ],
+                  "note": "Starts just after the streetlight ticks on"
+                }
+              }
+            ],
+            "cues": [
+              {
+                "id": "watch",
+                "word": "watch",
+                "occurrence": 1
+              }
+            ],
+            "targetSeconds": 4.5,
+            "minScreenSeconds": 3
           },
           {
-            "id": "b2", "structureBeat": "sho",
+            "id": "b2",
+            "structureBeat": "sho",
             "action": "Close, through the balusters: Mia leans to one side, peering down the street towards the corner, holding the rail with both hands.",
             "effect": "We know what she wants and feel her patience.",
-            "characters": ["mia"],
-            "spoken": [{ "speaker": "narrator", "text": "She knows the sound of Dad's car." }],
-            "cues": [{ "id": "car", "word": "car", "occurrence": 1 }],
-            "targetSeconds": 4, "minScreenSeconds": 3
+            "characters": [
+              "mia"
+            ],
+            "spoken": [
+              {
+                "speaker": "narrator",
+                "text": "She knows the sound of Dad's car.",
+                "delivery": {
+                  "marked": "(breath) She knows the sound of Dad's car.",
+                  "intent": "Shares a family fact, slightly confiding: everyone in this flat knows it",
+                  "emphasis": [
+                    "knows"
+                  ],
+                  "inflection": "A small lift on 'knows'; land 'car' cleanly and falling. Don't lean on 'Dad's'",
+                  "pace": "Even; no pause inside the line, because 'car' is a cue word",
+                  "startAt": 0.6,
+                  "pauses": [],
+                  "breaths": [
+                    "Before 'She'",
+                    "Then a long silent breath through beat b3"
+                  ],
+                  "note": "The cut into this shot lands 10 frames before 'car'"
+                }
+              }
+            ],
+            "cues": [
+              {
+                "id": "car",
+                "word": "car",
+                "occurrence": 1
+              }
+            ],
+            "targetSeconds": 4,
+            "minScreenSeconds": 3
           },
           {
-            "id": "b3", "structureBeat": "ten",
+            "id": "b3",
+            "structureBeat": "ten",
             "action": "Looking down from the balcony: headlights swing round the corner under the streetlight. Mia, at the edge of frame, rises higher on her toes.",
             "effect": "Hope: this is it. A held silent beat before the twist.",
-            "characters": ["mia"],
+            "characters": [
+              "mia"
+            ],
             "spoken": [],
             "cues": [],
-            "targetSeconds": 2, "minScreenSeconds": 1.5
+            "targetSeconds": 2,
+            "minScreenSeconds": 1.5,
+            "readingNote": "No words. The engine carries this beat; the reader breathes here, silently."
           },
           {
-            "id": "b4", "structureBeat": "ten",
+            "id": "b4",
+            "structureBeat": "ten",
             "action": "The headlight belongs to a delivery scooter, a pizza box strapped on the back, pulling up to her building.",
             "effect": "Surprise and a small letdown: not Dad.",
             "characters": [],
-            "spoken": [{ "speaker": "narrator", "text": "Not Dad." }],
-            "cues": [{ "id": "notdad", "word": "Not", "occurrence": 1 }],
-            "targetSeconds": 2.5, "minScreenSeconds": 2
+            "spoken": [
+              {
+                "speaker": "narrator",
+                "text": "Not Dad.",
+                "delivery": {
+                  "marked": "(breath) Not Dad.",
+                  "intent": "Deadpan correction, almost a shrug: no disappointment, no wink",
+                  "emphasis": [],
+                  "inflection": "Flat, then falling; even stress on both words",
+                  "pace": "Quick and short",
+                  "startAt": 0.5,
+                  "pauses": [],
+                  "breaths": [
+                    "Before 'Not', silent (taken in the b3 silence)",
+                    "After 'Dad', silent, through the rest of the shot"
+                  ],
+                  "note": "Comes just after the scooter's brake squeak, not on the cut"
+                }
+              }
+            ],
+            "cues": [
+              {
+                "id": "notdad",
+                "word": "Not",
+                "occurrence": 1
+              }
+            ],
+            "targetSeconds": 2.5,
+            "minScreenSeconds": 2
           },
           {
-            "id": "b5", "structureBeat": "ketsu",
+            "id": "b5",
+            "structureBeat": "ketsu",
             "action": "Mia throws both arms high above the rail, up on her toes, the warm window glowing behind her.",
             "effect": "Delight; the joke lands on her reaction.",
-            "characters": ["mia"],
-            "spoken": [{ "speaker": "narrator", "text": "Even better." }],
-            "cues": [{ "id": "better", "word": "better", "occurrence": 1 }],
-            "targetSeconds": 4.5, "minScreenSeconds": 3
+            "characters": [
+              "mia"
+            ],
+            "spoken": [
+              {
+                "speaker": "narrator",
+                "text": "Even better.",
+                "delivery": {
+                  "marked": "(breath, small, audible) Even better.",
+                  "intent": "The one warm moment: the smile is finally audible, still understated",
+                  "emphasis": [
+                    "Even"
+                  ],
+                  "inflection": "A gentle lift on 'Even', settling down on 'better'; ends falling and soft",
+                  "pace": "Slower than the rest",
+                  "startAt": 0.9,
+                  "pauses": [],
+                  "breaths": [
+                    "A small audible intake before 'Even', like the start of a smile",
+                    "None after; silence and music to the end"
+                  ],
+                  "note": "After her arms go up; then nothing more is said"
+                }
+              }
+            ],
+            "cues": [
+              {
+                "id": "better",
+                "word": "better",
+                "occurrence": 1
+              }
+            ],
+            "targetSeconds": 4.5,
+            "minScreenSeconds": 3
           }
         ]
       }
     ],
-    "totalSeconds": 17.5
+    "totalSeconds": 17.5,
+    "voiceDirection": {
+      "who": "A dry, deadpan Australian man, 40s to 50s, telling a story he knows well and is quietly fond of",
+      "accent": "General Australian (en-AU), not broad",
+      "register": "Understated. The humour is in restraint: never sell a line",
+      "pitch": "Low to mid, relaxed",
+      "pace": "Unhurried, about 2 words per second; let the pictures breathe",
+      "mic": "Close and intimate, as if sitting beside the listener",
+      "avoid": [
+        "rising inflection at the end of statements",
+        "a cheerful storybook lilt",
+        "audible smiling before the last line",
+        "pushing the jokes"
+      ],
+      "marks": "In 'marked': (breath) = a breath point; | = a pause without a breath; timings in seconds from the start of the shot"
+    }
   }
 }
