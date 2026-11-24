@@ -1,6 +1,7 @@
 # Plan for ai-movie
 
-Status: **draft 4**, 2026-11-24. Draft 2 was a synthesis of three independent
+Status: **draft 5**, 2026-11-24. Draft 5 records the human's scope decision
+(section 1.1): the first product is a storyboard film. Draft 2 was a synthesis of three independent
 plans:
 
 - draft 1 (Claude, written with the human during the storyboard sessions),
@@ -29,6 +30,23 @@ looks expensive but moves a boot to the wrong rung is a failed take. And the
 drawn frame can itself be the final image: the first film uses no image model
 at all.
 
+### 1.1 Near-term scope: the storyboard film (human decision, 2026-11-24)
+
+Well-made storyboard frames, held as static shots, with voice and a little
+music, are enough to tell a story. So the first product is a **storyboard
+film**: the approved animatic *is* the deliverable. The front end goes from a
+story to a screenplay with intended beats, and from there to shots.
+
+In scope now: story, screenplay with beats, voice, shot list, boards with
+full cinematic intent (size, angle, lens, composition, layers, tonal key,
+light, style profile), animatic, a light music bed, captions, assembly.
+
+Deferred: image and video generation, the route experiment (section 10),
+camera moves beyond simple holds, cost reservation for paid generation,
+post-production beyond the mix (grading, conforming, sound design,
+regeneration). These stay in the plan for a later phase and are not built
+until the storyboard film works.
+
 ### Non-goals for now
 
 - On-camera presenters, lip sync, or real people's likenesses.
@@ -39,6 +57,8 @@ at all.
 
 | Principle | What it means in practice | Source |
 |---|---|---|
+| First product is a storyboard film | Static boards, voice and a light music bed tell the story; generation comes later and only if it adds something (section 1.1) | Human, 2026-11-24 |
+| Story first, then screenplay with intended beats | Every shot traces back to a beat that states what happens and what the audience should understand or feel | Human, 2026-11-24 |
 | Storyboard is programmatic and deterministic | No image model in stage 2. Same record and seed give the same drawing | Draft 1, all agree |
 | A shot must change what the viewer knows | Each shot names what must be seen, what may be hidden, and what carries across the cut | GPT |
 | Voice before visuals | Lock narration, cut a timed rough version from the boards (an *animatic*), then buy generated visuals | GPT |
@@ -95,12 +115,17 @@ cut within the cap, use the approved drawing.
 
 ## 4. Workflow and approvals
 
-1. **Brief**: topic, audience, the one question the film answers, evidence,
-   locale, delivery shape, cash cap.
-2. **Script** as beats. Each beat states a claim or change, its spoken and
-   displayed text, cue words with stable IDs, and evidence. A style profile
-   is chosen for the film (section 7a.6).
-   **Approval 1: script, pronunciation and style profile.**
+1. **Story**: logline, premise, characters (each with a body profile),
+   setting, the change the story turns on, intended audience and length,
+   delivery shape, style profile. For an explainer, the story is the
+   question and its answer, with evidence.
+2. **Screenplay with intended beats.** Scenes, each with a location and time
+   of day, broken into beats. Each beat states what happens, the intended
+   effect on the audience (what they should understand or feel at that
+   moment), who is in it, and its narration or dialogue with cue words. The
+   beat list is the spine every later stage traces back to.
+   **Approval 1: story, screenplay beats, pronunciation, style profile and
+   character sheets (section 7b).**
 3. **Voice**: synthesise or record the narration and get word timings. For a
    short human read, hand-mark the caption phrase bounds and named cut cues
    on the actual take, stored as sample offsets with the audio's hash, so a
@@ -118,8 +143,9 @@ cut within the cap, use the approved drawing.
    and approval. Pose retrieval applies only to staged action.
 6. **Animatic**: frames cut to the real narration timings, watched as a film.
    **Approval 2: storyboard, judged in sequence, not frame by frame.**
-7. **Generation** (optional per film): stills from approved frames, then
-   motion for the few shots that need it, within the cash cap.
+7. **Generation** (deferred; optional per film later): stills from approved
+   frames, then motion for the few shots that need it, within the cash cap.
+   In the storyboard film the approved boards are the final pictures.
 8. **Captions, music, assembly** into a master.
    **Approval 3: final cut, watched on a phone.**
 9. **Publish** with a release receipt: title, captions, rights, disclosure
@@ -153,8 +179,11 @@ Every record on disk uses one envelope and is validated on read and write.
 | Record | Key fields |
 |---|---|
 | brief | audience, question, evidence, locale, delivery `{width, height, fps}`, cashCapUsd, style profile id |
+| story | logline, premise, characters `[{id, characterSheet, description}]`, setting, turning change, audience, target length, style profile id |
+| character sheet | id, name, role, body profile, silhouette shapes, garments as forms, value per garment, signature props, face option, turnaround hashes (section 7b) |
+| scene (screenplay) | number, location, time of day, characters present, beats in order |
 | style profile | framing, angle and lens habits, movement, tonal key and contrast, light, palette, texture, editing rhythm, image aspect ratio (section 7a.6) |
-| beat | spoken, display, cues `[{id, word, occurrence}]`, evidence, purpose |
+| beat | scene, what happens, intended effect (understand or feel), characters, spoken (narration or dialogue, with speaker), display, cues `[{id, word, occurrence}]`, evidence, target duration, minimum screen time |
 | shot | beat, intent, template (reference pose), setup, inCue, cueOffsetFrames (signed, default 0), mustSee, mayHide, motion, cutFrom |
 | scene | v1 (today's format) or v2 payload: camera, environment, lights, figures, props (section 5.2) |
 | pose example | actions, setup id, support, contacts `[{figure, joint, target}]`, gaze target, airborne, occlusion notes, scene hash, limitations |
@@ -283,7 +312,7 @@ its own key and reservation.
 
 | Stage | Method | Failure handling | Acceptance |
 |---|---|---|---|
-| Script | Brief to beats: opening question, observable change, answer. Each beat has a target duration and minimum screen time; the word budget comes from a test read or the chosen voice's measured rate (65 to 90 words for 30 to 45 seconds is only a first estimate). Claims tied to evidence | One redraft after notes; unsupported claims rejected; a beat that doesn't fit gets a shorter line or fewer shots | The timed read leaves at least a second of lead and a second of resolution around each observable change; a viewer can answer the opening question from a specific image; producer approves meaning and pronunciation |
+| Screenplay | Story to scenes and beats, each beat with what happens and its intended effect. For an explainer: opening question, observable change, answer. Each beat has a target duration and minimum screen time; the word budget comes from a test read or the chosen voice's measured rate (65 to 90 words for 30 to 45 seconds is only a first estimate). Claims tied to evidence | One redraft after notes; unsupported claims rejected; a beat that doesn't fit gets a shorter line or fewer shots | The timed read leaves at least a second of lead and a second of resolution around each observable change; a viewer can answer the opening question from a specific image; producer approves meaning and pronunciation |
 | Voice | Human recording or TTS, decoded to 48 kHz mono. For a short human read, hand-marked phrase bounds and cut cues on the actual take, stored with the audio hash | Missing required marks or text mismatch blocks the beat | Ordered onsets, correct cue words, no clipped syllables |
 | Shot list | Per beat: what is different on screen at the end, camera side, focal subject, cue, must-see, may-hide | Shots that merely illustrate the same noun are cut; tighten the script instead | Every line maps to a shot or an intentional hold; adjacent screen direction checked |
 | Storyboard | Shot to scene record (section 7), render sketch and diagnostics | Two repair rounds, then manual blocking | Required action identifiable at phone size with captions covered; hard diagnostics pass |
@@ -542,6 +571,38 @@ How it is used:
   Intentional mood changes are judged against the dramatic beat and recorded
   as a named key or palette change, never by quietly editing a prompt.
 
+## 7b. Character sheets: from mannequin to sketched character
+
+The mannequin is the skeleton and the camera's proof; the audience needs to
+recognise people. A **character sheet** turns a posed mannequin into a
+sketched character, the same in every shot, the way a production designer's
+model sheet does for a storyboard artist.
+
+| Field | Contents |
+|---|---|
+| Identity | Character id, name, role in the story, body profile (from `profiles.json`) |
+| Silhouette | The few shapes that make the character recognisable at thumbnail size: hair mass (as one shape on the head oval), headwear, coat or dress length and flare, trousers or skirt, footwear bulk, bag, glasses |
+| Clothing as forms | Garments attached to the body's own forms: a coat is a loft around the torso and upper legs that hangs below the pelvis; sleeves wrap the arm segments; a skirt flares from the pelvis; a hat is a simple solid on the head. They move with the pose because they are built on the same joints |
+| Value | Which garments are dark, mid or light, so two characters separate in the value pass and the main character holds the strongest contrast |
+| Signature props | Objects the character always carries or uses |
+| Face | Default: the head oval with face-direction lines, as agreed. Optional: two or three simple marks (brow line, eye line, mouth) for expression in close-ups only |
+| Turnaround | Front, three-quarter, side and back renders from the mannequin with the sheet applied, plus one action pose; stored by hash as the visual reference |
+
+Rules:
+
+- The sheet is approved with the story (approval 1), alongside the style
+  profile; the line weight and detail of the overlay follow the profile.
+- Overlays stay simple and in the sketch style: silhouette shapes and a few
+  fold lines, never rendered detail. The agreed mannequin conventions
+  (no fingers, no spiky hair, no hatching, clothed form, draped bust) still
+  hold; hair is one mass, not strands.
+- Every figure in a scene record refers to a character sheet; the story's
+  character list links each character to its sheet.
+- Recognisability test: in a contact sheet of thumbnails, a fresh viewer
+  can tell the characters apart and pick out the main character.
+- Later, the turnaround doubles as the identity reference for generated
+  plates, which is where character consistency becomes hard.
+
 ## 8. Storyboard renderer roadmap
 
 | Order | Change | Why now | Done when |
@@ -557,6 +618,7 @@ How it is used:
 | 3a | Value pass: two- or three-tone shadow block-in from tonal key and light motivation | Light versus dark is the main mood control and must be visible in boards (section 7a.3) | High-key, low-key and silhouette versions of one scene read as different moods at phone size |
 | 3b | Camera paths: keyframed position, look-at and field of view with easing; start and end boards with movement arrows; in-between frames for the animatic | Movement is a shot choice and must be judged in time | A dolly-in and a zoom from the same start frame visibly differ in perspective |
 | 3c | Composition overlay and checks: thirds grid, safe area, caption band, headroom and lead room | Framing must be reviewable and partly checkable | Subject placed on a third by a fixed camera lands within tolerance |
+| 6b | Character-sheet overlays: hair mass, headwear, garments as lofts on the body's forms, props, garment values in the value pass; turnaround renders | Viewers follow people, not mannequins | Two characters in one frame are told apart at thumbnail size; a coat hangs and moves with the pose in front, side and back views |
 | 6a | Set-detail emphasis by focal subject and story detail; optional perspective guides | The viewer may need to find a doorway before a figure; the rail in the peeking shot carries the story | In two versions of one street view, viewers find the designated doorway or figure first; guides never appear on the final board |
 
 Rows 3a to 3c follow row 3 (they need the fixed camera); row 6a goes with
@@ -589,6 +651,8 @@ shapes, night, headlights and wet-ground lighting.
   evaluation set; every previously accepted record must still render cleanly.
 
 ## 10. The generation route experiment
+
+**Deferred** with generation (section 1.1); kept here for the later phase.
 
 Run a capped manual pilot before building the generation adapter. The
 business question is whether blocking a shot in metres earns its producer
@@ -632,13 +696,14 @@ only measures the effect of sending the picture.)
 | Phase | Film | Exit decision |
 |---|---|---|
 | A. First cut, no image model | 15 to 20 seconds built on the ladder pair, whose pose and ladder are identical, so the lesson is about what a viewpoint shows. Establish the hands in the side view and ask the viewer to track the far hand; cut low and leave a beat to look; return to the side for the answer. Use a portrait crop or a detail insert, not full-width panels, so hands and captions stay legible on a phone. Human or Polly voice, captions, hard cuts | Before recording final narration, show the two views silently on a phone to a fresh viewer: they point to the grip in the first view and say what they can still see in the second. If the intended change is unclear, reframe or choose a clearer comparison. In the voiced cut, check the viewer understands the climber held the pose and only the camera moved |
-| B. First generated film | 30 to 45 seconds; approved animatic; one generated still replacing a drawing, at most one motion shot; parallel cut with the drawing | Private upload with captions and receipt under $5 cash; producer minutes recorded |
-| C. Repeatable explainers | Route experiment done; description-to-scene with repair; three unseen briefs including a non-ladder scene | Two of three films within the cash cap and a 45-minute labour target, counting all active producer minutes from brief to private master (rejected takes and manual repair included, provider waiting excluded) from the labour ledger. Report median and maximum by stage and the number of shots needing manual blocking. Swapping out a hard brief counts as a failure |
-| D. Continuity and languages | Second-language recut; two figures in one room; a silent parcel handoff | A fluent reviewer signs off; two viewers identify who gives and who hesitates |
-| E. Drama | One 30-second dialogue scene, starting with off-camera speech | Roles identifiable across cuts; decide whether drama is worth its cost |
+| B. First storyboard film | A short story (about 60 to 90 seconds) from story to screenplay beats to boards: static shots with full cinematic intent in one style profile, two figures and simple environments where the story needs them, a value pass for mood, voice, a light music bed, captions | A fresh viewer retells the story's turn and names what the main character wanted; every shot traces to a beat; producer minutes recorded |
+| C. Repeatable storyboard films | Description-to-scene with repair; three new stories, including one in a different style profile | Two of three films within the cash cap and a 45-minute labour target, counting all active producer minutes from brief to private master (rejected takes and manual repair included, provider waiting excluded) from the labour ledger. Report median and maximum by stage and the number of shots needing manual blocking. Swapping out a hard brief counts as a failure |
+| D. Continuity, dialogue and languages | A silent parcel handoff; a short dialogue scene with two voices; a second-language recut | Two viewers identify who gives and who hesitates; roles identifiable across cuts; a fluent reviewer signs off |
+| E. Generation and post (optional, later) | Route experiment (section 10), then one generated still replacing a drawing with a parallel cut, at most one motion shot; post-production beyond the mix if it earns its cost | Private upload under $5 cash; decide whether generated plates beat the drawn film for the cost |
 
 **Comprehension counts in phase C.** Before each phase C film, write the
-audience question and the visible evidence a correct answer would cite.
+audience question (for a story: what was the turn, and what did the main
+character want) and the visible evidence a correct answer would cite.
 After one normal phone playback with the intended audio and captions, a
 fresh target viewer gives their answer and says which image explained it;
 the unaided response is recorded. A film counts toward the two required
@@ -732,8 +797,8 @@ They remain **verify** until the purchase record in section 3.2 is made:
 | Initial plan | Draft 1 |
 | Competing plans | Done: GPT and Grok |
 | Synthesis | Draft 2 |
-| Refinement rounds (4 to 5) | Round 1 (Copilot, GPT, human notes): draft 3. Round 2 (Copilot, GPT): draft 4 |
-| Convert to beads | Updated to draft 4 |
+| Refinement rounds (4 to 5) | Round 1 (Copilot, GPT, human notes): draft 3. Round 2 (Copilot, GPT): draft 4. Human scope decision: draft 5 |
+| Convert to beads | Updated to draft 5; generation beads deferred (`deferred` label, lowest priority) |
 | Polish beads | One pass after each update |
 | Swarm | Not planned at this size |
 
@@ -780,3 +845,11 @@ apply cleanly.
 | G5 | GPT | A reveal needs a viewpoint change; a still allows only a previewed crop | important | agree | 7a.3 |
 | G6 | GPT | Profile inheritance with one reason per shot; local value judgement; story detail gets contrast, not blanket background fading; mixed-media seams | important | agree | 7a.1, 7a.3, 7a.6, roadmap 6a. Replaces draft 3's blanket "backgrounds lighter" rule |
 | G7 | GPT | Phase C requires a comprehension check per film | important | agree | 11 |
+
+### Human scope decision (draft 5)
+
+| # | Source | Change | Rating | Where |
+|---|---|---|---|---|
+| H3 | Human | The first product is a storyboard film: static boards, voice and a light music bed; generation, the route experiment and post-production beyond the mix are deferred | agree | 1.1, 2, 4, 10, 11 |
+| H4 | Human | Front end goes from story to screenplay with intended beats | agree | 4, 5.1, 6 |
+| H5 | Human | Character sheets turn posed mannequins into recognisable sketched characters | agree | 5.1, 7b, roadmap 6b |
