@@ -71,7 +71,11 @@ style profile and the tone in the story record.
 - `inflection`: rising, falling or flat, and where. Statements fall. In
   Australian and some other accents, guard against a rising end on
   statements unless it's wanted.
-- `pace`, and `startAt`: seconds from the start of the shot.
+- `pace`, and `startAt`: seconds from the start of the shot. If the line's
+  shot has a speech anchor (a cut tied to a cue word), the anchor places
+  the line instead: drop `startAt`, write `placedBy`, and make sure the
+  anchor's offset and the reading notes agree. The narration script lays
+  the voice out first and lengthens a shot rather than squeezing a breath.
 - `pauses` inside the line, each with its length and whether a breath fits.
 - `breaths`: where the reader breathes. Breathe at the start of a line, at
   a full stop with a gap of about 0.4 s or more, and silently through

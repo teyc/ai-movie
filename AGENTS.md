@@ -73,6 +73,9 @@ node lib/pose/cli.js lineup profiles.svg
 node --test                                         # all tests (golden renders included)
 node test/golden-review.js                          # side-by-side review of changed drawings
 UPDATE_GOLDEN=1 node --test                         # accept reviewed drawing changes
+node scripts/narrate.js generate examples/child-peek --dry-run   # show the TTS requests, no API call
+node scripts/narrate.js generate examples/child-peek             # paid: needs GEMINI_API_KEY or GEMINI_VIDEO_API_KEY in the environment
+node scripts/narrate.js assemble examples/child-peek --pick b1=1,b2=2,b4=1,b5=1
 ```
 
 ## Storyboard conventions (decided with the human)
@@ -137,7 +140,9 @@ it next time.
 1. File beads for any remaining or discovered work, and do the retro
    (self-improvement loop, step 4).
 2. Run the checks.
-3. Update bead status (`br close <id> --reason "..."`).
+3. For a code bead, get a second model's review first
+   (`docs/planning/refinements/CODE_REVIEW_PROMPT.md`) and resolve its high
+   findings. Then update bead status (`br close <id> --reason "..."`).
 4. `br sync --flush-only`, then stage `.beads/` with the code.
 5. Commit, then `git pull --rebase` and `git push`. Work is not finished until it is pushed to
    `origin` (github.com/teyc/ai-movie). If you cannot push (no credentials in a sandbox), say so

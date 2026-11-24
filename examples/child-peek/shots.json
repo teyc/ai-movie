@@ -264,7 +264,8 @@
         "anchor": {
           "kind": "speech",
           "cue": "better",
-          "offsetFrames": -15
+          "offsetFrames": -36,
+          "note": "Reconciled with the reading notes: a beat on the arms-up image before 'Even better'"
         },
         "seconds": 4.5,
         "size": "medium",

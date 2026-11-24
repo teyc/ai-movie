@@ -79,13 +79,13 @@
                   ],
                   "inflection": "A small lift on 'knows'; land 'car' cleanly and falling. Don't lean on 'Dad's'",
                   "pace": "Even; no pause inside the line, because 'car' is a cue word",
-                  "startAt": 0.6,
                   "pauses": [],
                   "breaths": [
                     "Before 'She'",
                     "Then a long silent breath through beat b3"
                   ],
-                  "note": "The cut into this shot lands 10 frames before 'car'"
+                  "note": "The cut into this shot lands 10 frames before 'car'",
+                  "placedBy": "sh2's anchor: the cut lands 10 frames before 'car'"
                 }
               }
             ],
@@ -129,13 +129,13 @@
                   "emphasis": [],
                   "inflection": "Flat, then falling; even stress on both words",
                   "pace": "Quick and short",
-                  "startAt": 0.5,
                   "pauses": [],
                   "breaths": [
                     "Before 'Not', silent (taken in the b3 silence)",
                     "After 'Dad', silent, through the rest of the shot"
                   ],
-                  "note": "Comes just after the scooter's brake squeak, not on the cut"
+                  "note": "Comes just after the scooter's brake squeak, not on the cut",
+                  "placedBy": "sh4's anchor: 'Not' lands 8 frames after the cut, just after the brake squeak"
                 }
               }
             ],
@@ -169,13 +169,13 @@
                   ],
                   "inflection": "A gentle lift on 'Even', settling down on 'better'; ends falling and soft",
                   "pace": "Slower than the rest",
-                  "startAt": 0.9,
                   "pauses": [],
                   "breaths": [
                     "A small audible intake before 'Even', like the start of a smile",
                     "None after; silence and music to the end"
                   ],
-                  "note": "After her arms go up; then nothing more is said"
+                  "note": "After her arms go up; then nothing more is said",
+                  "placedBy": "sh5's anchor: 'better' lands 36 frames after the cut, so 'Even' starts about 0.9 s in"
                 }
               }
             ],
@@ -206,7 +206,13 @@
         "audible smiling before the last line",
         "pushing the jokes"
       ],
-      "marks": "In 'marked': (breath) = a breath point; | = a pause without a breath; timings in seconds from the start of the shot"
+      "marks": "In 'marked': (breath) = a breath point; | = a pause without a breath; timings in seconds from the start of the shot",
+      "tts": {
+        "voice": "Algenib",
+        "accentTag": "<australian accent>",
+        "languageCode": "en-AU",
+        "note": "Chosen by the human in AI Studio, 2026-11-24: the inline tag triggers the accent"
+      }
     }
   }
 }
