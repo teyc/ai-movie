@@ -7,7 +7,10 @@ context compaction.
 ## Rules
 
 0. **The human's instructions override everything here.** If Chui says
-   otherwise, do what he says.
+   otherwise, do what he says. He has also asked to be kept on the flywheel:
+   when a request skips plan → beads → code, jumps ahead of the current phase,
+   or starts a side quest, say so in one line, name the bead or phase it
+   belongs to, and offer to file it. Then do what he decides.
 1. **No file deletion** without explicit permission from the human.
 2. **No destructive git commands**: no `git reset --hard`, `git clean -fd`,
    `git checkout -- .`, forced pushes, or `rm -rf` on tracked paths.
@@ -16,7 +19,9 @@ context compaction.
 5. **No file proliferation.** Change the file in place; never add
    `mannequin_v2.js`, `cli_new.js` or similar.
 6. **Check after every change.** Run the tests (see Commands). For anything
-   that draws, also render and look at the image before calling it done.
+   that draws, render it and look at it at full size and at phone thumbnail
+   size, check it against the shot's must-see list, and say plainly what
+   fails before calling it done.
 7. **Multi-agent awareness.** Never stash, revert or overwrite changes you did
    not make. If a file you need has someone else's uncommitted edits, stop and
    ask.
@@ -98,6 +103,16 @@ These came from review of rendered frames. Do not undo them without asking.
 Fixing a mistake is half the job; the other half is making the process catch
 it next time.
 
+0. **Hunt for gaps; don't wait to be told.** Review your own output the way
+   the human would.
+   - *Visual*: look at every board as a director and an art teacher would.
+     Can a stranger read it at thumbnail size? Is every must-see item there?
+     Are anatomy, eyelines, screen direction, scale and the frame edge right?
+   - *Process*: did a step produce something the next step couldn't use (a
+     shot list asking for things the renderer can't draw)? Did work go around
+     the beads? Is a bead, skill or rule out of date?
+   Call each gap out to the human unprompted, ranked by severity, and file it
+   as a bead or a lesson.
 1. **Trace every escape.** When the human, a reviewer or a later stage
    catches a defect, name the step that should have caught it first: a
    skill, a check, a test, a rule in this file, or a bead description. Fix
