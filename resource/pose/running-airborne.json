@@ -1,0 +1,27 @@
+{
+  "name": "Running, airborne",
+  "description": "Mid-stride with both feet off the ground.",
+  "profile": "child",
+  "camera": {
+    "pos": [2.4, 0.7, 1.2],
+    "at": [0, 0.7, 0.1]
+  },
+  "lineOfAction": ["head", "neck", "pelvis", "rKn", "rToe"],
+  "pose": {
+    "root": {
+      "p": [0, 0.72, 0],
+      "pitch": 14
+    },
+    "tho": [4, 0, 15],
+    "lHip": [75, 0, 0],
+    "lKn": 85,
+    "lAn": 5,
+    "rHip": [-20, 0, 0],
+    "rKn": 65,
+    "rAn": -35,
+    "rSh": [60, 8, 0],
+    "rEl": 95,
+    "lSh": [-40, 10, 0],
+    "lEl": 90
+  }
+}

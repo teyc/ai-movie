@@ -1,0 +1,30 @@
+{
+  "name": "Walking",
+  "description": "Mid-step walk with the arms swinging opposite to the legs.",
+  "profile": "adult-f",
+  "camera": {
+    "pos": [2.6, 1.1, 2.0],
+    "at": [0, 0.9, 0.1]
+  },
+  "stand": true,
+  "ground": true,
+  "pose": {
+    "root": {
+      "p": [0, 1, 0],
+      "pitch": 4
+    },
+    "tho": [0, 0, -8],
+    "lHip": [25, 0, 0],
+    "lKn": 8,
+    "lAn": 5,
+    "rHip": [-15, 0, 0],
+    "rKn": 25,
+    "rAn": -20,
+    "rSh": [22, 5, 0],
+    "rEl": 20,
+    "lSh": [-20, 5, 0],
+    "lEl": 15,
+    "lHand": "open",
+    "rHand": "open"
+  }
+}

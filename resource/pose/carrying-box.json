@@ -1,0 +1,42 @@
+{
+  "name": "Carrying a box",
+  "description": "Walking with a box held at the waist, leaning back against the load.",
+  "profile": "middle-age",
+  "camera": {
+    "pos": [2.7, 1.2, 1.7],
+    "at": [0, 1, 0.2]
+  },
+  "stand": true,
+  "ground": true,
+  "props": [
+    {
+      "t": "box",
+      "mid": ["lHa", "rHa"],
+      "off": [0, 0.06, -0.02],
+      "size": [0.46, 0.36, 0.36],
+      "bias": -0.05
+    }
+  ],
+  "lineOfAction": ["head", "neck", "pelvis", "rKn", "rToe"],
+  "pose": {
+    "root": {
+      "p": [0, 1, 0],
+      "pitch": -8
+    },
+    "lum": [-8, 0, 0],
+    "tho": [-4, 0, 0],
+    "hd": [5, 0, 0],
+    "lSh": [8, 12, 0],
+    "lEl": 75,
+    "rSh": [8, 12, 0],
+    "rEl": 75,
+    "lHand": "open",
+    "rHand": "open",
+    "lHip": [28, 3, 0],
+    "lKn": 22,
+    "lAn": 5,
+    "rHip": [-12, 3, 0],
+    "rKn": 12,
+    "rAn": -15
+  }
+}

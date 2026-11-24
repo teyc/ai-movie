@@ -1,0 +1,40 @@
+{
+  "name": "Ladder from below",
+  "description": "The same climb seen from the foot of the ladder. Extreme foreshortening.",
+  "profile": "adult",
+  "camera": {
+    "pos": [0.55, 0.15, -0.55],
+    "at": [0, 2, 0.6]
+  },
+  "props": [
+    {
+      "t": "ladder",
+      "halfWidth": 0.22,
+      "base": [0, 0, 0.25],
+      "top": [0, 3.3, 1.075],
+      "rungSpacing": 0.3
+    }
+  ],
+  "lineOfAction": ["head", "neck", "pelvis", "lKn", "lAn"],
+  "pose": {
+    "root": {
+      "p": [0, 1.72, 0.2],
+      "pitch": 14
+    },
+    "lum": [5, 0, 0],
+    "tho": [0, 0, 0],
+    "nk": [-10, 0, 0],
+    "hd": [-25, 0, 0],
+    "ik": {
+      "rWr": [-0.2, 2.4, 0.78],
+      "lWr": [0.2, 2.1, 0.7050000000000001],
+      "lAn": [0.12, 0.96, 0.39499999999999996],
+      "rAn": [-0.12, 1.26, 0.47000000000000003]
+    },
+    "foot": {
+      "l": [0, -0.15, 1],
+      "r": [0, -0.15, 1]
+    },
+    "look": [0, 3.0, 1.0]
+  }
+}

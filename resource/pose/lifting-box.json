@@ -1,0 +1,45 @@
+{
+  "name": "Lifting from the floor",
+  "description": "Deep squat to lift a box from the floor, looking at the box.",
+  "profile": "adult-f",
+  "camera": {
+    "pos": [2.2, 0.9, 1.8],
+    "at": [0, 0.5, 0.3]
+  },
+  "stand": true,
+  "ground": true,
+  "props": [
+    {
+      "t": "box",
+      "mid": ["lHa", "rHa"],
+      "off": [0, 0, -0.03],
+      "size": [0.4, 0.32, 0.34],
+      "floor": 1,
+      "bias": -0.05
+    }
+  ],
+  "lineOfAction": ["head", "neck", "pelvis", "lKn", "lToe"],
+  "pose": {
+    "root": {
+      "p": [0, 0.5, 0],
+      "pitch": 30
+    },
+    "lum": [35, 0, 0],
+    "tho": [15, 0, 0],
+    "nk": [-10, 0, 0],
+    "hd": [-25, 0, 0],
+    "lHip": [110, 22, 0],
+    "rHip": [110, 22, 0],
+    "lKn": 125,
+    "rKn": 125,
+    "lAn": 20,
+    "rAn": 20,
+    "lSh": [88, 8, 0],
+    "rSh": [88, 8, 0],
+    "lEl": 12,
+    "rEl": 12,
+    "lHand": "open",
+    "rHand": "open",
+    "look": [0, 0.16, 0.6]
+  }
+}

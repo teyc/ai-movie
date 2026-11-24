@@ -1,0 +1,42 @@
+{
+  "name": "Leaning over a balcony",
+  "description": "Leaning on a balcony rail with crossed forearms, looking down over the edge.",
+  "profile": "adult",
+  "camera": {
+    "pos": [1.9, 1.5, -1.9],
+    "at": [0, 1, 0.4]
+  },
+  "props": [
+    {
+      "t": "railing",
+      "from": [-1.7, 0, 0.45],
+      "to": [1.7, 0, 0.45],
+      "height": 1.05,
+      "balusterSpacing": 0.16
+    }
+  ],
+  "lineOfAction": ["head", "neck", "pelvis", "lKn", "lAn"],
+  "pose": {
+    "root": {
+      "p": [0, 0.9, 0.1],
+      "pitch": 35
+    },
+    "lum": [15, 0, 0],
+    "tho": [10, 0, 0],
+    "nk": [10, 0, 0],
+    "hd": [10, 0, 0],
+    "lHand": "open",
+    "rHand": "open",
+    "ik": {
+      "lWr": [-0.08, 1.12, 0.52],
+      "rWr": [0.08, 1.12, 0.56],
+      "lAn": [0.1, 0.07, -0.2],
+      "rAn": [-0.1, 0.07, -0.08]
+    },
+    "pole": {
+      "lEl": [1, -0.2, -0.2],
+      "rEl": [-1, -0.2, -0.2]
+    },
+    "look": [0, -3, 2.5]
+  }
+}

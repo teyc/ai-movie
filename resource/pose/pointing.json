@@ -1,0 +1,26 @@
+{
+  "name": "Pointing",
+  "description": "Arm raised to point at something ahead; the gaze follows the hand.",
+  "profile": "adult",
+  "camera": {
+    "pos": [2.0, 1.3, 2.8],
+    "at": [0, 1, 0.2]
+  },
+  "stand": true,
+  "ground": true,
+  "pose": {
+    "root": {
+      "p": [0, 1, 0],
+      "yaw": 0
+    },
+    "tho": [0, 0, 12],
+    "rSh": [88, 8, 0],
+    "rEl": 4,
+    "rHand": "open",
+    "lSh": [0, 8, 0],
+    "lEl": 12,
+    "lHip": [6, 0, 0],
+    "rHip": [-6, 0, 0],
+    "look": [-0.4, 1.45, 6]
+  }
+}

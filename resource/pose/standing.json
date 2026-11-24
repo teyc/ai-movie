@@ -1,0 +1,24 @@
+{
+  "name": "Standing",
+  "description": "Neutral stance, arms relaxed, looking at the horizon.",
+  "profile": "adult",
+  "camera": {
+    "pos": [1.8, 1.3, 3.2],
+    "at": [0, 0.95, 0]
+  },
+  "stand": true,
+  "ground": true,
+  "pose": {
+    "root": {
+      "p": [0, 1, 0]
+    },
+    "lSh": [5, 8, 0],
+    "lEl": 15,
+    "rSh": [-5, 8, 0],
+    "rEl": 15,
+    "lHip": [3, -1, 0],
+    "rHip": [-3, -1, 0],
+    "lHand": "open",
+    "rHand": "open"
+  }
+}

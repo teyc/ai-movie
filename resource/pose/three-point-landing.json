@@ -1,0 +1,33 @@
+{
+  "name": "Three-point landing",
+  "description": "Crouched landing with one hand on the ground, seen from above.",
+  "profile": "adult",
+  "camera": {
+    "pos": [1.2, 1.4, 2.0],
+    "at": [0, 0.45, 0.1],
+    "zoom": 1.2
+  },
+  "ground": true,
+  "lineOfAction": ["lHa", "lSh", "neck", "pelvis", "rKn", "rToe"],
+  "pose": {
+    "root": {
+      "p": [0, 0.47, 0],
+      "pitch": 20
+    },
+    "lum": [30, 0, 0],
+    "tho": [20, 0, -10],
+    "nk": [-15, 0, 0],
+    "lHip": [100, 25, 0],
+    "lKn": 100,
+    "lAn": 15,
+    "rHip": [10, 15, 0],
+    "rKn": 110,
+    "rAn": -40,
+    "rSh": [80, 5, 0],
+    "rEl": 5,
+    "lSh": [20, 100, 0],
+    "lEl": 20,
+    "rHand": "open",
+    "hd": [-30, 0, 0]
+  }
+}

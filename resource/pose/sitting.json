@@ -1,0 +1,35 @@
+{
+  "name": "Sitting",
+  "description": "Seated on a box, hands resting on the thighs.",
+  "profile": "middle-age-f",
+  "camera": {
+    "pos": [2.2, 1.1, 2.2],
+    "at": [0, 0.7, 0.1]
+  },
+  "props": [
+    {
+      "t": "box",
+      "c": [0, 0.22, -0.06],
+      "size": [0.5, 0.44, 0.46],
+      "bias": 0.1
+    }
+  ],
+  "ground": true,
+  "pose": {
+    "root": {
+      "p": [0, 0.53, 0],
+      "pitch": -4
+    },
+    "lum": [6, 0, 0],
+    "lHip": [86, 4, 0],
+    "rHip": [86, 4, 0],
+    "lKn": 88,
+    "rKn": 88,
+    "lSh": [22, 6, 0],
+    "rSh": [22, 6, 0],
+    "lEl": 62,
+    "rEl": 62,
+    "lHand": "open",
+    "rHand": "open"
+  }
+}

@@ -14,7 +14,7 @@ storyboard frame, and hands generation a shot that is already composed.
 | Stage | What it does | Status |
 |---|---|---|
 | 1. Script | Break an idea into narrated shots | Not started |
-| 2. Storyboard | Turn each shot into a composed frame: body, pose, gaze, props, camera | Prototype exists, not yet in this repo |
+| 2. Storyboard | Turn each shot into a composed frame: body, pose, gaze, props, camera | Prototype in [`lib/pose`](lib/pose) |
 | 3. Generation | Produce the final shot from the storyboard frame | Not started |
 | 4. Voice | Narration with timing data | Not started |
 | 5. Captions, music | Subtitles and sound | Not started |
@@ -43,9 +43,24 @@ hand-sketched mannequin of a clothed form.
 Known gaps: no rooms, streets or lighting yet, and each scene record is still
 written by hand rather than produced from a shot description.
 
+## Repository layout
+
+| Path | What it holds |
+|---|---|
+| [`lib/pose`](lib/pose) | The storyboard mannequin: renderer, body profiles, command line, and the scene-record format |
+| [`resource/pose`](resource/pose) | Reference poses and shots, each as a scene record (`.json`) with its render (`.png`) |
+
+Render a scene (Node.js, no dependencies):
+
+```sh
+node lib/pose/cli.js render resource/pose/dash.json
+```
+
+![Reference poses](resource/pose/index.png)
+
 ## Status
 
-Early. This repository currently holds only this README.
+Early. Only the storyboard step exists, as a prototype.
 
 ## Acknowledgements
 

@@ -1,0 +1,102 @@
+{
+  "toddler": {
+    "h": 0.48,
+    "leg": 0.78,
+    "torso": 1.18,
+    "arm": 1.05,
+    "head": 1.05,
+    "neck": 0.6,
+    "girth": 1.35,
+    "belly": 0.9,
+    "rib": 1.05
+  },
+  "child": {
+    "h": 0.685,
+    "leg": 0.91,
+    "torso": 1.05,
+    "head": 1,
+    "neck": 0.85,
+    "girth": 1.05
+  },
+  "teen": {
+    "h": 0.91,
+    "leg": 1.03,
+    "torso": 0.95,
+    "sh": 0.9,
+    "rib": 0.92,
+    "girth": 0.85,
+    "head": 0.96
+  },
+  "adult": {},
+  "adult-f": {
+    "h": 0.93,
+    "sh": 0.9,
+    "hip": 1.1,
+    "rib": 0.9,
+    "neck": 1.2,
+    "girth": 0.88,
+    "breast": 0.85,
+    "head": 0.95
+  },
+  "middle-age": {
+    "girth": 1.12,
+    "belly": 1,
+    "post": {
+      "tho": [5],
+      "hd": [-8]
+    }
+  },
+  "middle-age-f": {
+    "h": 0.93,
+    "sh": 0.9,
+    "hip": 1.17,
+    "rib": 0.93,
+    "neck": 1.15,
+    "belly": 0.6,
+    "breast": 0.95,
+    "head": 0.95
+  },
+  "old": {
+    "h": 0.95,
+    "sh": 0.92,
+    "girth": 0.9,
+    "belly": 0.4,
+    "post": {
+      "tho": [24],
+      "nk": [6],
+      "hd": [-28],
+      "lum": [-10],
+      "Kn": [12],
+      "Hip": [6]
+    },
+    "flex": 0.7
+  },
+  "old-f": {
+    "h": 0.87,
+    "sh": 0.88,
+    "hip": 1.1,
+    "rib": 0.9,
+    "neck": 1.1,
+    "girth": 0.9,
+    "belly": 0.4,
+    "breast": 0.8,
+    "head": 0.95,
+    "post": {
+      "tho": [24],
+      "nk": [6],
+      "hd": [-28],
+      "lum": [-10],
+      "Kn": [12],
+      "Hip": [6]
+    },
+    "flex": 0.7
+  },
+  "long-torso": {
+    "torso": 1.15,
+    "leg": 0.9
+  },
+  "long-legs": {
+    "torso": 0.9,
+    "leg": 1.1
+  }
+}

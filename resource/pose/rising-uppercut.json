@@ -1,0 +1,33 @@
+{
+  "name": "Rising uppercut",
+  "description": "Rising punch with an arched body and a tilted camera.",
+  "profile": "adult",
+  "camera": {
+    "pos": [1.3, 0.8, 1.8],
+    "at": [0, 1.35, 0],
+    "zoom": 1.05,
+    "rollDeg": 20
+  },
+  "lineOfAction": ["rHa", "rSh", "chest", "pelvis", "lKn", "lToe"],
+  "pose": {
+    "root": {
+      "p": [0, 1.3, 0],
+      "pitch": -5
+    },
+    "lum": [-10, 10, 5],
+    "tho": [-15, 10, 30],
+    "nk": [-10, 0, 0],
+    "rSh": [150, 10, 0],
+    "rEl": 20,
+    "lSh": [-20, 25, 0],
+    "lEl": 110,
+    "rHip": [85, 15, 0],
+    "rKn": 110,
+    "rAn": -30,
+    "lHip": [-10, 5, 0],
+    "lKn": 10,
+    "lAn": -40,
+    "hd": [-20, 0, 0],
+    "look": "free"
+  }
+}
